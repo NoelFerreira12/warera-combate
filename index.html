@@ -1,0 +1,1946 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Assistente de combate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#06080b; --bg2:#0a0e13; --s1:rgba(255,255,255,.028); --s2:rgba(255,255,255,.05); --s3:rgba(255,255,255,.08);
+  --hair:rgba(255,255,255,.07); --hair2:rgba(255,255,255,.12);
+  --ink:#eef2f6; --ink2:#b4bfcb; --ink3:#7b8796; --ink4:#56606d;
+  --ac:#5ef2b4; --ac2:#2fd393; --acf:rgba(94,242,180,.10); --acg:rgba(94,242,180,.35);
+  --warn:#ffb547; --warnf:rgba(255,181,71,.10); --bad:#ff5d6c; --badf:rgba(255,93,108,.10); --info:#6aa9ff; --infof:rgba(106,169,255,.10);
+  --life:#ff4f7a; --life2:#ff8aa6; --food:#ffb547; --pill:#b58cff;
+  --c-common:#aab4c0; --c-uncommon:#4fd17f; --c-rare:#4aa3ff; --c-epic:#b58cff; --c-legendary:#ff9f43; --c-mythic:#ff5f8a;
+  --f-d:"Space Grotesk",ui-sans-serif,system-ui,sans-serif; --f-u:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-m:"JetBrains Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;
+  --r:18px; --r2:12px;
+}
+@media (prefers-color-scheme: light){ :root:not([data-tema="escuro"]){
+  --bg:#f4f5f2; --bg2:#ecede8; --s1:rgba(10,20,30,.03); --s2:rgba(10,20,30,.05); --s3:rgba(10,20,30,.08);
+  --hair:rgba(10,20,30,.09); --hair2:rgba(10,20,30,.16);
+  --ink:#0c1218; --ink2:#38434f; --ink3:#66717d; --ink4:#8b95a0;
+  --ac:#0b9b6a; --ac2:#087d55; --acf:rgba(11,155,106,.09); --acg:rgba(11,155,106,.25);
+  --warn:#b26a00; --warnf:rgba(214,140,0,.11); --bad:#c8293b; --badf:rgba(200,41,59,.08); --info:#1f6fd6; --infof:rgba(31,111,214,.08);
+  --life:#e0335d; --life2:#f27a98; --food:#c98100; --pill:#7f4fe0;
+  --c-epic:#7f4fe0; --c-legendary:#cc6a00; --c-mythic:#d22d63; --c-rare:#1f6fd6; --c-uncommon:#178a4a;
+}}
+:root[data-tema="claro"]{
+  --bg:#f4f5f2; --bg2:#ecede8; --s1:rgba(10,20,30,.03); --s2:rgba(10,20,30,.05); --s3:rgba(10,20,30,.08);
+  --hair:rgba(10,20,30,.09); --hair2:rgba(10,20,30,.16);
+  --ink:#0c1218; --ink2:#38434f; --ink3:#66717d; --ink4:#8b95a0;
+  --ac:#0b9b6a; --ac2:#087d55; --acf:rgba(11,155,106,.09); --acg:rgba(11,155,106,.25);
+  --warn:#b26a00; --warnf:rgba(214,140,0,.11); --bad:#c8293b; --badf:rgba(200,41,59,.08); --info:#1f6fd6; --infof:rgba(31,111,214,.08);
+  --life:#e0335d; --life2:#f27a98; --food:#c98100; --pill:#7f4fe0;
+  --c-epic:#7f4fe0; --c-legendary:#cc6a00; --c-mythic:#d22d63; --c-rare:#1f6fd6; --c-uncommon:#178a4a;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:15.5px/1.55 var(--f-u);-webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(900px 500px at 8% -8%, rgba(94,242,180,.07), transparent 60%),
+                   radial-gradient(800px 600px at 105% 10%, rgba(181,140,255,.06), transparent 60%);
+  background-attachment:fixed;min-height:100vh}
+button,select,input{font:inherit;color:inherit}
+a{color:inherit}
+.mono{font-family:var(--f-m);font-feature-settings:"tnum" 1,"zero" 0}
+.num{font-family:var(--f-d);font-feature-settings:"tnum" 1}
+.wrap{max-width:1120px;margin:0 auto;padding:0 28px}
+svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* barra de topo */
+.topo{position:sticky;top:0;z-index:20;backdrop-filter:saturate(1.4) blur(14px);-webkit-backdrop-filter:saturate(1.4) blur(14px);
+  background:color-mix(in srgb, var(--bg) 78%, transparent);border-bottom:1px solid var(--hair)}
+.topo .wrap{display:flex;align-items:center;gap:18px;height:58px}
+.marca{display:flex;align-items:center;gap:10px;font-family:var(--f-d);font-weight:700;letter-spacing:.01em;white-space:nowrap}
+.marca .sig{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:linear-gradient(135deg,var(--ac),#1fb5ff);color:#03110b}
+.marca .sig svg{width:16px;height:16px;stroke-width:2.2}
+.nav{display:flex;gap:2px;margin-left:6px;overflow-x:auto;scrollbar-width:none;min-width:0}
+.nav::-webkit-scrollbar{display:none}
+.nav a{padding:7px 11px;border-radius:9px;text-decoration:none;color:var(--ink3);font-size:13.5px;font-weight:500;white-space:nowrap}
+.nav a:hover{color:var(--ink);background:var(--s2)}
+.lig{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink3);white-space:nowrap;flex-shrink:0}
+.lig .pt{width:8px;height:8px;border-radius:50%;background:var(--ac);box-shadow:0 0 0 0 var(--acg);animation:pulso 2.4s infinite}
+.lig.mal .pt{background:var(--bad);animation:none} .lig.pausa .pt{background:var(--warn);animation:none}
+@keyframes pulso{0%{box-shadow:0 0 0 0 var(--acg)}70%{box-shadow:0 0 0 7px rgba(0,0,0,0)}100%{box-shadow:0 0 0 0 rgba(0,0,0,0)}}
+.tema{flex-shrink:0;border:1px solid var(--hair);background:transparent;border-radius:9px;width:34px;height:34px;display:grid;place-items:center;cursor:pointer;color:var(--ink3)}
+.tema:hover{color:var(--ink);border-color:var(--hair2)}
+
+/* cabecalho */
+.cab{padding:42px 0 10px}
+.cab-l1{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.etq{font-family:var(--f-m);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3)}
+.estado{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;padding:4px 10px 4px 9px;border-radius:999px;background:var(--acf);color:var(--ac)}
+.estado.prov{background:var(--infof);color:var(--info)} .estado.velha{background:var(--warnf);color:var(--warn)} .estado.calc{background:var(--infof);color:var(--info)}
+.estado .rd{width:6px;height:6px;border-radius:50%;background:currentColor}
+.gira{width:11px;height:11px;border-radius:50%;border:2px solid currentColor;border-right-color:transparent;animation:gira .9s linear infinite}
+@keyframes gira{to{transform:rotate(360deg)}}
+h1{font-family:var(--f-d);font-weight:700;font-size:clamp(30px,4.6vw,52px);line-height:1.02;letter-spacing:-.03em;margin:0 0 6px;max-width:900px}
+h1 em{font-style:normal;background:linear-gradient(100deg,var(--ac),#36c8ff 70%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.horas{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:var(--ink3);margin-top:12px}
+.horas b{color:var(--ink2);font-weight:600}
+.horas .s{display:inline-flex;align-items:center;gap:6px}
+
+/* vitais */
+.vitais{display:grid;grid-template-columns:1.25fr 1fr .8fr .8fr;gap:14px;margin:26px 0 8px}
+.vital{padding:16px 18px 15px;border-radius:var(--r);background:var(--s1);box-shadow:inset 0 0 0 1px var(--hair)}
+.vital .t{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--ink3);margin-bottom:6px}
+.vital .t span:first-child{display:flex;align-items:center;gap:7px;font-weight:600;color:var(--ink2)}
+.vital .v{font-family:var(--f-d);font-size:30px;font-weight:700;letter-spacing:-.02em;line-height:1.05}
+.vital .v small{font-size:15px;color:var(--ink3);font-weight:500;letter-spacing:0}
+.vital .sub{font-size:12.5px;color:var(--ink3);margin-top:8px;line-height:1.45}
+.vital .sub b{color:var(--ink2);font-weight:600}
+.barra{position:relative;height:14px;border-radius:7px;background:var(--s3);margin-top:10px;overflow:hidden}
+.barra .ench{position:absolute;inset:0 auto 0 0;border-radius:7px}
+.barra .fant{position:absolute;top:0;bottom:0;border-radius:0 7px 7px 0;opacity:.35;background-image:repeating-linear-gradient(135deg,currentColor 0 4px,transparent 4px 8px)}
+.barra .marcas{position:absolute;inset:0;display:flex}
+.barra .marcas i{flex:1;border-right:1px solid color-mix(in srgb, var(--bg) 70%, transparent)}
+.barra .marcas i:last-child{border-right:0}
+.vida .ench{background:linear-gradient(90deg,var(--life),var(--life2));box-shadow:0 0 18px rgba(255,79,122,.35)}
+.vida .fant{color:var(--life2)}
+.fome .ench{background:linear-gradient(90deg,#ff9a1f,var(--food))} .fome .fant{color:var(--food)}
+.anel{display:flex;align-items:center;gap:14px}
+.anel svg{width:58px;height:58px;transform:rotate(-90deg)}
+.anel .bg{stroke:var(--s3);fill:none;stroke-width:6}
+.anel .fg{stroke:var(--pill);fill:none;stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset .6s}
+
+/* seccoes */
+.sec{margin-top:64px;scroll-margin-top:76px}
+.sec-cab{display:flex;align-items:baseline;gap:14px;margin-bottom:18px;flex-wrap:wrap}
+.sec-cab .n{font-family:var(--f-m);font-size:12px;color:var(--ac);letter-spacing:.08em}
+.sec-cab h2{font-family:var(--f-d);font-size:clamp(22px,2.6vw,28px);font-weight:700;letter-spacing:-.02em;margin:0}
+.sec-cab p{margin:0;color:var(--ink3);font-size:14px;flex-basis:100%}
+
+/* agora: o destaque */
+.agora{position:relative;border-radius:24px;padding:28px 30px;background:linear-gradient(160deg, color-mix(in srgb, var(--ac) 9%, var(--bg2)), var(--bg2) 55%);
+  box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--ac) 22%, transparent), 0 30px 80px -40px rgba(0,0,0,.6);overflow:hidden}
+.agora::after{content:"";position:absolute;right:-120px;top:-120px;width:360px;height:360px;border-radius:50%;background:radial-gradient(closest-side, var(--acf), transparent);pointer-events:none}
+.agora .k{font-family:var(--f-m);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ac);display:flex;align-items:center;gap:8px}
+.agora h3{font-family:var(--f-d);font-size:clamp(26px,3.6vw,40px);line-height:1.08;letter-spacing:-.025em;margin:10px 0 6px}
+.agora h3 .lado{color:var(--ac)}
+.agora .meta{color:var(--ink2);font-size:15px}
+.agora .meta b{color:var(--ink)}
+.agora-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:26px 40px;margin-top:24px;align-items:end}
+.grande{font-family:var(--f-d);font-weight:700;font-size:96px;line-height:.82;letter-spacing:-.05em}
+.grande small{display:block;font-family:var(--f-u);font-size:13px;font-weight:500;letter-spacing:0;line-height:1.45;color:var(--ink3);margin-top:14px}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2px;border-radius:16px;overflow:hidden}
+.kpi{background:var(--s1);padding:13px 15px}
+.kpi > span{display:block;font-size:12px;color:var(--ink3);margin-bottom:3px}
+.kpi b .drop{font-size:inherit}
+.kpi b{font-family:var(--f-d);font-size:20px;font-weight:600;letter-spacing:-.01em}
+.kpi.forte{background:var(--acf)} .kpi.forte b{color:var(--ac);font-size:24px}
+.kit{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap;align-items:center}
+.peca-mini{position:relative;width:62px;height:62px;border-radius:14px;background:var(--s2);display:grid;place-items:center;box-shadow:inset 0 0 0 1.5px var(--c,var(--hair))}
+.peca-mini img{width:44px;height:44px;object-fit:contain;filter:drop-shadow(0 4px 8px rgba(0,0,0,.35))}
+.peca-mini .rr{position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);font-family:var(--f-m);font-size:10px;padding:1px 6px;border-radius:6px;background:var(--bg2);color:var(--c);box-shadow:inset 0 0 0 1px var(--c);white-space:nowrap}
+.peca-mini.troca::before{content:"";position:absolute;top:-4px;right:-4px;width:12px;height:12px;border-radius:50%;background:var(--warn);box-shadow:0 0 0 3px var(--bg2)}
+.kit .nota{font-size:13px;color:var(--ink3);margin-left:8px;max-width:340px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;padding:3px 10px;border-radius:999px;background:var(--s2);color:var(--ink2)}
+.chip img{width:16px;height:16px}
+.r-common{--c:var(--c-common)} .r-uncommon{--c:var(--c-uncommon)} .r-rare{--c:var(--c-rare)} .r-epic{--c:var(--c-epic)} .r-legendary{--c:var(--c-legendary)} .r-mythic{--c:var(--c-mythic)}
+.drop{color:var(--c);font-weight:700}
+
+/* plano */
+.fase{display:flex;align-items:center;gap:12px;margin:26px 0 8px;font-size:13px;color:var(--ink3)}
+.fase b{font-family:var(--f-m);font-size:12px;letter-spacing:.12em;color:var(--ink);text-transform:uppercase}
+.fase::after{content:"";flex:1;height:1px;background:var(--hair)}
+.passo{display:grid;grid-template-columns:34px minmax(0,1.6fr) 104px repeat(3,minmax(0,1fr)) 110px;gap:14px;align-items:center;padding:14px 4px;border-bottom:1px solid var(--hair)}
+.passo .ix{font-family:var(--f-m);font-size:12px;color:var(--ink4)}
+.passo h4{margin:0;font-size:15.5px;font-weight:600;line-height:1.3}
+.passo h4 .lado{color:var(--ac)}
+.passo .sm{font-size:12.5px;color:var(--ink3);margin-top:2px}
+.passo .g{font-family:var(--f-d);font-size:24px;font-weight:700;letter-spacing:-.03em;text-align:center;white-space:nowrap}
+.passo .g small{display:block;font-family:var(--f-u);font-size:11px;font-weight:500;color:var(--ink3);letter-spacing:0}
+.passo .c{font-size:13.5px} .passo .c > span{display:block;font-size:11.5px;color:var(--ink3)}
+.passo .lu{text-align:right} .passo .lu b{font-family:var(--f-d);font-size:19px;color:var(--ac);display:block} .passo .lu span{font-size:12px;color:var(--ink3)}
+.passo.acabou{opacity:.45} .passo.acabou h4{text-decoration:line-through}
+.badge{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:999px;margin-left:8px;vertical-align:2px;letter-spacing:.03em}
+.badge.novo{background:var(--acf);color:var(--ac)} .badge.mudou{background:var(--infof);color:var(--info)}
+.jan{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:1px 8px;border-radius:999px;background:var(--s2);color:var(--ink2);white-space:nowrap}
+.jan.j-pílula{background:color-mix(in srgb, var(--pill) 16%, transparent);color:var(--pill)}
+.jan.j-ressaca{background:var(--badf);color:var(--bad)}
+.jan.j-normal{background:var(--s2);color:var(--ink2)}
+.alts{grid-column:2 / -1;display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12.5px;color:var(--ink3);margin-top:-2px}
+.alt{padding:3px 9px;border-radius:9px;background:var(--s1);box-shadow:inset 0 0 0 1px var(--hair)}
+.alt.esc{box-shadow:inset 0 0 0 1.5px var(--ac);color:var(--ink2)}
+.alt b{color:var(--ink);font-weight:600}
+.espera{grid-column:2 / -1;font-size:12.5px;color:var(--ink2)} .espera.sim{color:var(--ac)}
+.esp-aviso,.aviso-j{display:block;margin-top:3px;color:var(--warn);font-weight:500}
+.linha-j{display:flex;border-radius:12px;overflow:hidden;margin:6px 0 2px;box-shadow:inset 0 0 0 1px var(--hair)}
+.linha-j div{flex:1;padding:8px 12px;font-size:12.5px;color:var(--ink2);border-right:1px solid var(--hair)} .linha-j div:last-child{border-right:0}
+.linha-j b{display:block;font-size:13px;color:var(--ink)}
+.linha-j .j-pílula{background:color-mix(in srgb, var(--pill) 10%, transparent)} .linha-j .j-ressaca{background:var(--badf)}
+.tag.pend{background:var(--warnf);color:var(--warn)}
+.opcional{grid-column:2 / -1;font-size:12.5px;color:var(--ink3);margin-top:-4px}
+.saiu{font-size:13px;color:var(--ink3);padding:10px 4px}
+.depois{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:8px}
+.resumo-b{display:flex;flex-wrap:wrap;gap:6px 22px;align-items:baseline;padding:14px 16px;border-radius:var(--r2);background:var(--acf);margin:14px 0 4px;font-size:14px;color:var(--ink2)}
+.resumo-b b{font-family:var(--f-d);font-size:20px;color:var(--ink)} .resumo-b .l b{color:var(--ac)}
+.tab tr.esc td{background:var(--acf)}
+.tab td small{display:block;font-size:11.5px;color:var(--ink3)}
+#plano .tab td:last-child{white-space:normal;min-width:240px}
+.ja{font-size:12px;color:var(--ink3);margin-top:3px} .ja b{color:var(--ink2)}
+.dr th.grp{text-align:center;color:var(--ink2);border-bottom:0;padding-bottom:0}
+.dr td.cut{font-family:var(--f-m);font-size:12.5px} .dr td.cut.vazio{color:var(--ink4)}
+.dr td.sep,.dr th.sep{border-left:1px solid var(--hair2)}
+.dr tr.plano td{background:var(--acf)} .dr td small{display:inline;font-size:11px;color:var(--ink3)}
+.dr .tu{color:var(--ac);font-size:11.5px;display:block}
+.dr td:first-child{white-space:normal;min-width:200px;max-width:300px}
+.jogsel{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin:14px 0 0;padding:14px 16px;border-radius:var(--r2);background:var(--s1)}
+.jogsel label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--ink3)}
+.jogsel input{padding:8px 10px;border-radius:9px;border:1px solid var(--hair2);background:var(--bg);color:var(--ink);font-size:14px;min-width:220px}
+.jogsel #jogres{flex-basis:100%;display:flex;flex-wrap:wrap;gap:8px}
+.ligj{background:none;border:0;padding:0;color:var(--ink3);text-decoration:underline;cursor:pointer;font:inherit;letter-spacing:inherit}
+.nota-b{padding:14px 16px;border-radius:var(--r2);background:var(--s1);font-size:13.5px;color:var(--ink2)}
+.nota-b b{color:var(--ink)} .nota-b .t{font-family:var(--f-m);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);display:block;margin-bottom:5px}
+
+/* equipamento */
+.loadout{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+.slot{position:relative;border-radius:16px;padding:14px 12px 12px;background:var(--s1);box-shadow:inset 0 0 0 1px var(--hair);text-align:center}
+.slot::before{content:"";position:absolute;inset:0;border-radius:16px;background:radial-gradient(120px 80px at 50% 0%, color-mix(in srgb, var(--c) 22%, transparent), transparent 70%);pointer-events:none}
+.slot .img{height:70px;display:grid;place-items:center}
+.slot .img img{max-width:68px;max-height:64px;object-fit:contain;filter:drop-shadow(0 8px 14px rgba(0,0,0,.4))}
+.slot .sn{font-size:11.5px;color:var(--ink3);margin-top:6px}
+.slot .cd{font-family:var(--f-d);font-weight:700;font-size:16px;color:var(--c)}
+.slot .ra{font-size:11.5px;color:var(--ink3)}
+.slot .org{display:inline-block;margin-top:8px;font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--s2);color:var(--ink2)}
+.slot .org.compra{background:var(--warnf);color:var(--warn)} .slot .org.manual{background:var(--infof);color:var(--info)}
+.mini-barra{height:4px;border-radius:2px;background:var(--s3);margin-top:8px;overflow:hidden} .mini-barra i{display:block;height:100%;background:var(--ac)}
+.mini-barra.baixa i{background:var(--bad)}
+.slot .dd{font-size:11px;color:var(--ink3);margin-top:4px;font-family:var(--f-m)}
+.aviso{display:flex;gap:12px;padding:14px 16px;border-radius:var(--r2);background:var(--warnf);color:var(--ink2);font-size:14px;margin-top:14px}
+.aviso svg{color:var(--warn);margin-top:2px} .aviso b{color:var(--ink)}
+.trocas{list-style:none;margin:14px 0 0;padding:0;font-size:14px;color:var(--ink2)}
+.trocas li{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--hair)}
+.trocas .seta{color:var(--ink4)}
+
+/* tabelas */
+.tab{width:100%;border-collapse:collapse;font-size:13.5px}
+.tab th{font-weight:500;color:var(--ink3);text-align:right;padding:9px 10px;font-size:12px;border-bottom:1px solid var(--hair2);white-space:nowrap}
+.tab td{padding:10px;text-align:right;border-bottom:1px solid var(--hair);white-space:nowrap}
+.tab th:first-child,.tab td:first-child{text-align:left}
+.tab tr.vence td{background:var(--acf)}
+.tab td.pos{color:var(--ac)} .tab td.neg{color:var(--bad)}
+.rolar{overflow-x:auto;border-radius:var(--r2)}
+.tag{display:inline-block;font-size:11px;font-weight:600;padding:1px 8px;border-radius:999px}
+.tag.ok{background:var(--acf);color:var(--ac)} .tag.nao{background:var(--badf);color:var(--bad)} .tag.est{background:var(--warnf);color:var(--warn)}
+.tag.ordem{background:var(--infof);color:var(--info)} .tag.ind{background:var(--badf);color:var(--bad)}
+
+/* resultado */
+.res{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-radius:var(--r);overflow:hidden;box-shadow:inset 0 0 0 1px var(--hair)}
+.res > div{padding:18px 20px;border-right:1px solid var(--hair)} .res > div:last-child{border-right:0}
+.res span{display:block;font-size:12.5px;color:var(--ink3)}
+.res b{font-family:var(--f-d);font-size:28px;font-weight:700;letter-spacing:-.02em}
+.res .l b{color:var(--ac)} .res .l.neg b{color:var(--bad)}
+.res small{display:block;font-size:12px;color:var(--ink3);margin-top:3px}
+.decomp{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:22px}
+.decomp h4{margin:0 0 8px;font-size:13px;color:var(--ink3);font-weight:500}
+.lin{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--hair);font-size:14px}
+.lin span{color:var(--ink2)} .lin b{font-weight:600;font-family:var(--f-m);font-size:13.5px}
+.lin.tot b{font-size:15px;color:var(--ink)}
+.pequeno{font-size:13px;color:var(--ink3);margin:12px 0 0}
+
+/* objectivo */
+.seg{display:inline-flex;background:var(--s2);border-radius:12px;padding:3px;gap:2px;flex-wrap:wrap}
+.seg button{border:0;background:transparent;padding:8px 14px;border-radius:9px;cursor:pointer;color:var(--ink3);font-size:13.5px;font-weight:500}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg);font-weight:600}
+.seg button:not([aria-pressed="true"]):hover{color:var(--ink)}
+
+/* simulador */
+.sim{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.pick{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:14px;background:var(--s1);box-shadow:inset 0 0 0 1px var(--hair)}
+.pick img{width:38px;height:38px;object-fit:contain}
+.pick .lab{font-size:11.5px;color:var(--ink3)}
+.pick select{width:100%;border:0;background:transparent;font-weight:600;font-size:14px;color:var(--c);cursor:pointer;padding:0;outline:none;text-overflow:ellipsis}
+.pick select option{color:#111;background:#fff}
+.pick > div{min-width:0;flex:1}
+.simres{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2px;border-radius:14px;overflow:hidden;margin-top:14px}
+.simres div{background:var(--s1);padding:12px 14px}
+.simres span{display:block;font-size:12px;color:var(--ink3)}
+.simres b{font-family:var(--f-d);font-size:20px}
+.d{font-size:12px;font-weight:600;font-family:var(--f-m)} .d.mais{color:var(--ac)} .d.menos{color:var(--bad)} .d.neutro{color:var(--ink3)}
+.botoes{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 14px;border-radius:11px;border:0;background:var(--s2);cursor:pointer;font-size:13.5px;font-weight:500;color:var(--ink)}
+.btn:hover{background:var(--s3)} .btn.prim{background:var(--ac);color:#03140c;font-weight:600} .btn.prim:hover{background:var(--ac2)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.form{display:grid;grid-template-columns:1.2fr repeat(3,1fr) auto;gap:10px;align-items:end;margin-top:12px}
+.form label{display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--ink3)}
+.form input,.form select{padding:9px 10px;border-radius:10px;border:1px solid var(--hair2);background:var(--bg2);font-size:14px;min-width:0}
+
+/* bounty e drops */
+.duas{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.duas > *, .motor > *, .decomp > *, .agora-grid > *, .depois > *{min-width:0}
+.spark{width:90px;height:24px;vertical-align:middle}
+.spark path{fill:none;stroke:var(--warn);stroke-width:1.6}
+.comp{display:grid;grid-template-columns:90px 1fr 1fr;gap:8px 12px;align-items:center;font-size:13px}
+.comp .bar{height:8px;border-radius:4px;background:var(--s3);position:relative;overflow:hidden}
+.comp .bar i{position:absolute;inset:0 auto 0 0;background:var(--c);border-radius:4px}
+.comp .hd{font-size:11.5px;color:var(--ink3)}
+.caixa{padding:16px 18px;border-radius:var(--r2);background:var(--s1);font-size:14px;color:var(--ink2)}
+.caixa b{color:var(--ink)}
+
+/* motor */
+.motor{display:grid;grid-template-columns:1.45fr 1fr;gap:28px}
+.prog{height:6px;border-radius:3px;background:var(--s3);overflow:hidden;margin:10px 0 6px}
+.prog i{display:block;height:100%;background:linear-gradient(90deg,var(--info),var(--ac));transition:width .4s}
+.fontes td:nth-child(2),.fontes td:nth-child(3),.fontes td:nth-child(4){font-family:var(--f-m);font-size:12.5px}
+.pt2{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:7px;background:var(--ac)}
+.pt2.a{background:var(--info);animation:pulso 1.4s infinite} .pt2.v{background:var(--warn)} .pt2.e{background:var(--bad)} .pt2.p{background:var(--ink4)}
+.uso{display:flex;align-items:baseline;gap:8px} .uso b{font-family:var(--f-d);font-size:34px}
+.hist{list-style:none;margin:0;padding:0}
+.hist li{display:grid;grid-template-columns:70px 1fr auto;gap:12px;padding:9px 0;border-bottom:1px solid var(--hair);font-size:13.5px;align-items:baseline}
+.hist .h{font-family:var(--f-m);font-size:12.5px;color:var(--ink3)}
+.mud{list-style:none;margin:0;padding:0}
+.mud li{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--hair);font-size:13.5px}
+.mud li span:first-child{color:var(--ink2)} .mud li span:last-child{font-family:var(--f-m);font-size:12.5px;white-space:nowrap}
+.flash{animation:flash 1.8s ease-out 1}
+@keyframes flash{0%{background:color-mix(in srgb, var(--ac) 28%, transparent)}100%{background:transparent}}
+details.tec{margin-top:64px;border-top:1px solid var(--hair);padding-top:18px}
+details.tec summary{cursor:pointer;font-family:var(--f-d);font-weight:600;font-size:17px;list-style:none;display:flex;align-items:center;gap:8px}
+details.tec summary::-webkit-details-marker{display:none}
+details.tec p, details.tec li{font-size:13.5px;color:var(--ink2)}
+.rod{margin:56px 0 70px;font-size:12.5px;color:var(--ink4);text-align:center}
+.esqueleto{height:14px;border-radius:7px;background:linear-gradient(90deg,var(--s2),var(--s3),var(--s2));background-size:200% 100%;animation:brilho 1.4s infinite}
+@keyframes brilho{to{background-position:-200% 0}}
+
+@media (max-width:900px){
+  .vitais{grid-template-columns:1fr 1fr}
+  .passo{grid-template-columns:28px minmax(0,1fr) 84px 90px;row-gap:6px}
+  .passo .c{display:none} .passo .c.mob{display:block;grid-column:2 / 4}
+  .loadout{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .agora-grid{grid-template-columns:1fr;gap:18px}
+  .res{grid-template-columns:1fr 1fr} .res > div:nth-child(2){border-right:0} .res > div:nth-child(-n+2){border-bottom:1px solid var(--hair)}
+  .duas,.motor,.decomp{grid-template-columns:1fr}
+  .depois{grid-template-columns:1fr}
+  .sim{grid-template-columns:1fr 1fr}
+  .simres{grid-template-columns:1fr 1fr}
+  .form{grid-template-columns:1fr 1fr}
+}
+@media (max-width:600px){
+  .wrap{padding:0 16px}
+  .topo .wrap{height:54px;gap:10px} .nav{display:none} .lig .txt{display:none}
+  .cab{padding-top:28px}
+  .vitais{grid-template-columns:1fr;gap:10px}
+  .agora{padding:22px 18px;border-radius:20px}
+  .agora-grid{grid-template-columns:1fr;gap:16px}
+  .grande{font-size:76px}
+  .sim{grid-template-columns:1fr}
+  .passo{grid-template-columns:24px minmax(0,1fr) 78px;padding:12px 0}
+  .passo .g{font-size:21px;text-align:right}
+  .passo .lu{grid-column:2 / 4;text-align:left;display:flex;gap:10px;align-items:baseline}
+  .passo .lu b{display:inline}
+}
+</style>
+</head>
+<body>
+<div class="topo"><div class="wrap">
+  <div class="marca"><span class="sig"><svg class="i" viewBox="0 0 24 24"><path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><path d="m13 19 6-6"/><path d="m16 16 4 4"/><path d="m19 21 2-2"/></svg></span>Assistente de combate</div>
+  <nav class="nav"><a href="#agora">Agora</a><a href="#plano">Plano</a><a href="#equipamento">Equipamento</a><a href="#comparar">Comparar</a><a href="#bounty">Bounty e drops</a><a href="#drops">Drops</a><a href="#motor">Motor</a></nav>
+  <div class="lig" id="lig"><span class="pt"></span><span class="txt">a ligar…</span></div>
+  <button class="tema" id="lingua" title="Mudar a língua" style="font:600 12px var(--f-m);width:auto;padding:0 10px">EN</button>
+  <button class="tema" id="tema" title="Mudar o tema"><svg class="i" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+</div></div>
+
+<main class="wrap">
+  <header class="cab" id="cab"><div class="esqueleto" style="width:40%"></div></header>
+  <div id="jogsel"></div>
+  <section class="vitais" id="vitais"></section>
+
+  <section class="sec" id="agora"></section>
+  <section class="sec" id="plano"></section>
+  <section class="sec" id="equipamento"></section>
+  <section class="sec" id="resultado"></section>
+  <section class="sec" id="comparar"></section>
+  <section class="sec" id="bounty"></section>
+  <section class="sec" id="drops"></section>
+  <section class="sec" id="motor"></section>
+  <details class="tec" id="tec"><summary><svg class="i" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>Detalhes técnicos e de onde vem cada número</summary><div id="tecdet"></div></details>
+  <p class="rod">Só Epic, Legendary e Mythic · seis slots · drops pelo ranking merged · lucro no pior de três cenários · nada aqui é garantido</p>
+  <p class="rod" id="rod2">Só lê a API pública do jogo · não mexe na tua conta</p>
+</main>
+
+<script>
+// ---------------------------------------------------------------- idioma (PT / EN)
+// O portugues e o texto da pagina; o ingles e uma camada: depois de cada desenho, o texto visivel
+// (nos de texto e title/placeholder) passa por estas regras e frases. Os numeros seguem a lingua.
+window.LINGUA_EN = {
+  rx: [
+  ["até (\\d+)% do lucro", "up to $1% of profit"],
+  ["de dano entre as (\\d\\d:\\d\\d) e as (\\d\\d:\\d\\d)", "damage between $1 and $2"],
+  ["(\\d+) de (\\d+) rondas lidas", "$1 of $2 rounds read"],
+  ["^há ([\\d.,]+) (s|min|h)$", "$1 $2 ago"],
+  ["\\(há ([\\d.,]+) (s|min|h)\\)", "($1 $2 ago)"],
+  ["^em ([\\d.,]+ s)$", "in $1"],
+  ["^em ([\\d.,]+ min)$", "in $1"],
+  ["\\bem ([\\d.,]+) (s|min)\\b", "in $1 $2"],
+  ["^em (.+)$", "in $1"],
+  ["\\bdas (\\d\\d:\\d\\d)", "from $1"],
+  [", em (\\d+) rondas?", ", in $1 rounds"],
+  [" a (−?-?[\\d.,]+/1k)", " at $1"],
+  ["(\\d+)\\.º", "#$1"],
+  ["^ de ([\\d.,\\s]+)\\.$", " of $1."],
+  ["(\\d[\\d.,]*) de (\\d[\\d.,]*)", "$1 of $2"],
+  ["As (\\d+) batalhas de torneio ficam fora: o teu MU não está em nenhuma equipa e não está verificado que se possa bater lá \\(estão na aba Drops\\)\\.", "The $1 tournament battles are left out: your MU is not in any team and it is not verified that you can hit there (they are in the Drops tab)."],
+  ["(\\w+) tem de estar entre ([\\d.,]+) e ([\\d.,]+)", "$1 must be between $2 and $3"],
+  ["\\bde (\\d+) rondas?\\b", "for $1 rounds"],
+  ["(r\\d+) nova na lista", "$1 new in the list"],
+  ["(r\\d+) \\(ronda nova\\)", "$1 (new round)"],
+  ["^ronda (.+)$", "round $1"],
+  ["^jogadores (.+)$", "players $1"],
+  ["^fundo (.+)$", "fund $1"],
+  ["^preço (.+)$", "price $1"],
+  ["Torneio · fase (\\S+) · equipa", "Tournament · stage $1 · team"],
+  ["(\\d+) erro\\(s\\)", "$1 error(s)"],
+  [" pedidos$", " requests"]
+  ],
+  frases: [
+  ["Assistente de combate", "Combat assistant"],
+  ["Detalhes técnicos e de onde vem cada número", "Technical details and where each number comes from"],
+  ["Só Epic, Legendary e Mythic · seis slots · drops pelo ranking merged · lucro no pior de três cenários · nada aqui é garantido", "Epic, Legendary and Mythic only · six slots · drops by the merged ranking · profit in the worst of three scenarios · nothing here is guaranteed"],
+  ["local · só lê a API pública · não mexe na tua conta", "local · reads only the public API · never touches your account"],
+  ["Bounty e drops", "Bounty and drops"],
+  ["Equipamento", "Equipment"],
+  ["Comparar", "Compare"],
+  ["Plano", "Plan"],
+  ["a ligar…", "connecting…"],
+  ["Mudar o tema", "Change theme"],
+  ["Mudar a língua", "Change language"],
+  ["Lucro por 1k de dano", "Profit per 1k damage"],
+  ["O critério principal: o maior lucro líquido por cada 1000 de dano. Desempates: lucro total, dano útil, menor investimento.", "The main criterion: the highest net profit per 1,000 damage. Ties: total profit, useful damage, lower investment."],
+  ["Para comparar: o maior lucro líquido total. O lucro por 1k só desempata.", "For comparison: the highest total net profit. Profit per 1k only breaks ties."],
+  ["Só o que já tens (vestido ou introduzido à mão), com a melhor munição e comida em cada batalha.", "Only what you already have (worn or entered by hand), with the best ammo and food in each battle."],
+  [" O objectivo escolhe o equipamento; com ele, as barras gastam-se todas.", " The goal picks the equipment; with it, the bars are spent in full."],
+  [" · predefinido", " · default"],
+  ["Lucro total", "Total profit"],
+  ["Sem compras", "No purchases"],
+  ["A carregar o Python no browser (Pyodide). Na primeira vez são cerca de 20 MB; depois ficam em cache.", "Loading Python in the browser (Pyodide). The first time it is about 20 MB; after that it is cached."],
+  ["A carregar o numpy…", "Loading numpy…"],
+  ["A carregar o motor do assistente…", "Loading the assistant's engine…"],
+  ["Não foi possível arrancar o motor no browser: ", "Could not start the engine in the browser: "],
+  ["À espera do servidor", "Waiting for the server"],
+  [". A página actualiza-se sozinha.", ". The page updates by itself."],
+  ["A ler o jogo e a fazer o primeiro plano", "Reading the game and making the first plan"],
+  ["A preparar", "Getting ready"],
+  ["a carregar o motor…", "loading the engine…"],
+  ["à espera do motor", "waiting for the engine"],
+  ["sem ligação ao servidor local", "no connection to the local server"],
+  ["API em pausa (", "API paused ("],
+  ["pedidos/min", "requests/min"],
+  ["última estratégia válida · a ler dados novos", "last valid strategy · reading new data"],
+  ["a recalcular · a anterior continua válida", "recalculating · the previous one stays valid"],
+  ["desactualizada", "out of date"],
+  ["actualizada", "up to date"],
+  ["provisória", "provisional"],
+  ["a preparar os conjuntos", "preparing the sets"],
+  ["à espera de dados", "waiting for data"],
+  ["sem rondas para analisar", "no rounds to analyse"],
+  ["a calcular", "calculating"],
+  ["ligado", "connected"],
+  ["Outro jogador", "Another player"],
+  ["nome no jogo", "in-game name"],
+  ["Procurar", "Search"],
+  ["Fechar", "Close"],
+  ["a procurar…", "searching…"],
+  ["Nenhum jogador com esse nome.", "No player with that name."],
+  ["Não deu para procurar agora (o jogo não respondeu). Tenta daqui a pouco.", "Couldn't search right now (the game didn't answer). Try again shortly."],
+  ["a mudar…", "switching…"],
+  ["Não deu para mudar.", "Couldn't switch."],
+  ["trocar de jogador", "switch player"],
+  [", esta é a tua estratégia de combate.", ", this is your combat strategy."],
+  ["Última leitura", "Last read"],
+  ["Último cálculo", "Last calculation"],
+  ["conjuntos avaliados", "sets evaluated"],
+  ["Vida, fome e pílula da leitura das ", "Life, hunger and pill from the reading at "],
+  ["). Não são de agora: a próxima leitura actualiza-as.", "). They are not current: the next reading updates them."],
+  [". Um golpe gasta ", ". One hit uses "],
+  [" sem esquiva, ", " without dodge, "],
+  [" em média.", " on average."],
+  ["Dá para comer ", "You can eat "],
+  [" vida cada).", " life each)."],
+  ["Menos de 1: ainda não dá para comer.", "Less than 1: not enough to eat yet."],
+  ["% ressaca", "% hangover"],
+  ["de ressaca, até às ", "of hangover, until "],
+  [" · o dano é ", " · damage is "],
+  ["% do normal", "% of normal"],
+  [" h de ressaca", " h of hangover"],
+  ["sem pílula activa", "no active pill"],
+  ["Dano das barras", "Damage from the bars"],
+  ["Toda a vida e fome", "All the life and hunger"],
+  ["Sem rondas abertas para gastar as barras.", "No open rounds to spend the bars on."],
+  [" · depois ", " · then "],
+  ["sem bounty neste lado", "no bounty on this side"],
+  [" · esgota em ~", " · runs out in ~"],
+  ["sem peça", "no item"],
+  ["O que fazer agora", "What to do now"],
+  ["Nada a fazer agora", "Nothing to do now"],
+  ["As barras não dão dano antes de as rondas lidas acabarem.", "The bars give no damage before the read rounds end."],
+  ["Não há rondas abertas lidas.", "There are no open rounds read."],
+  [" O motor volta a ver quando houver dados novos.", " The engine looks again when there is new data."],
+  [" do lado de ", " on the side of "],
+  ["Ronda acaba às ", "Round ends at "],
+  [" · bónus ×", " · bonus ×"],
+  ["a mais nesta ronda (já fizeste ", "more in this round (you already did "],
+  ["; ficas com ", "; you end with "],
+  ["de dano nesta ronda", "damage in this round"],
+  [" · depois as outras ", " · then the other "],
+  [", até esvaziares as barras (", ", until the bars are empty ("],
+  [" no total)", " in total)"],
+  [" · é a única ronda: gasta aqui as barras todas", " · it is the only round: spend all the bars here"],
+  ["Bounty bruto", "Gross bounty"],
+  ["Lucro líquido", "Net profit"],
+  ["Equipamento recomendado: ", "Recommended equipment: "],
+  [" trocas face ao que tens vestido (ponto laranja).", " swaps from what you wear (orange dot)."],
+  [" troca face ao que tens vestido (ponto laranja).", " swap from what you wear (orange dot)."],
+  ["Equipamento: o que já tens vestido.", "Equipment: what you already wear."],
+  ["Ver porquê", "See why"],
+  ["Ataca", "Attack"],
+  ["Defende", "Defend"],
+  ["a ronda já acabou", "the round is over"],
+  [" · ranking lido ", " · ranking read "],
+  ["no pior cenário", "in the worst case"],
+  ["Ainda não bateste nesta ronda: o plano conta do zero.", "You haven't hit in this round yet: the plan starts from zero."],
+  ["Já fizeste ", "You already did "],
+  [" · com o plano ficas com ", " · with the plan you end with "],
+  [" · na batalha já tens ", " · in the battle you already have "],
+  [" nesta ronda", " in this round"],
+  [" em diante", " onwards"],
+  ["Faz tudo até às ", "Do everything before "],
+  [". Depois vêm ", ". Then come "],
+  [" h de ressaca com −", " h of hangover with −"],
+  ["% de ataque (confirmado na API a 20/11).", "% attack (confirmed in the API on 20/11)."],
+  ["Estás em ", "You are in "],
+  ["ressaca até às ", "hangover until "],
+  [": o dano por golpe é ", ": damage per hit is "],
+  ["% do normal. Quando acabar, o dano por golpe sobe ", "% of normal. When it ends, damage per hit rises "],
+  ["× e o motor recalcula sozinho nessa altura.", "× and the engine recalculates by itself then."],
+  ["Sem pílula nem ressaca: o dano por golpe é o normal.", "No pill and no hangover: damage per hit is normal."],
+  [" de dano · posição #", " damage · position #"],
+  ["Ainda não constas no ranking lido", "You are not in the ranking read yet"],
+  [" de dano · bounty ", " damage · bounty "],
+  [" · resumo ", " · summary "],
+  ["Sem resumo actual da batalha", "No current battle summary"],
+  ["Ronda terminada", "Round over"],
+  [" de dano · lucro ", " damage · profit "],
+  ["Acaba antes", "Ends before"],
+  [" fecha antes de haver vida para bater", " closes before there is life to hit"],
+  ["Fora do plano", "Not in the plan"],
+  [" as barras rendem mais nas outras rondas", " the bars yield more in the other rounds"],
+  ["Leitura ", "Read "],
+  ["O plano até esvaziar as barras", "The plan to empty the bars"],
+  ["Toda a vida (", "All the life ("],
+  [") e toda a fome (", ") and all the hunger ("],
+  [" de agora viram dano, dividido pelas rondas abertas da forma que dá mais lucro no pior cenário.", " you have now become damage, split across the open rounds in the way that gives the most profit in the worst case."],
+  [" viram dano, dividido pelas rondas abertas da forma que dá mais lucro no pior cenário.", " become damage, split across the open rounds in the way that gives the most profit in the worst case."],
+  [" Conta com o dano que já fizeste: o teu lugar no ranking é o do total. Pela ordem a que as rondas acabam.", " It counts the damage you already did: your place in the ranking is that of your total. In the order the rounds end."],
+  ["Objectivo", "Goal"],
+  ["Dano total ", "Total damage "],
+  ["Comida: ", "Food: "],
+  ["gasta as barras já, ronda a ronda", "spend the bars now, round by round"],
+  ["as barras estão vazias: isto é com a vida e a fome que recuperas a essa hora", "the bars are empty: this uses the life and hunger you recover at that hour"],
+  ["nada para fazer", "nothing to do"],
+  ["Saiu do plano no último cálculo: ", "Left the plan in the last calculation: "],
+  ["o plano", "the plan"],
+  ["fundo estimado", "estimated fund"],
+  ["Janelas da pílula", "Pill windows"],
+  ["as mesmas barras gastas a outra hora (sem contar o que recuperas até lá)", "the same bars spent at another time (not counting what you recover until then)"],
+  ["Rondas abertas", "Open rounds"],
+  ["Quando", "When"],
+  ["Mais tarde", "Later"],
+  ["pílula, o resto das barras e a próxima hora", "pill, the rest of the bars and the next hour"],
+  ["Onde o lucro parava", "Where the profit stopped"],
+  ["O lucro máximo era com ", "The maximum profit was at "],
+  ["). O resto das barras — ", "). The rest of the bars — "],
+  [" de dano — ", " damage — "],
+  [" de dano (", " damage ("],
+  ["ainda rende", "still yields"],
+  [". O plano gasta tudo.", ". The plan spends everything."],
+  ["Gastar as barras todas é também o que dá mais lucro.", "Spending all the bars is also what gives the most profit."],
+  ["Depois de esvaziar", "After emptying"],
+  [" a vida volta ", " life comes back "],
+  [" e a fome ", " and hunger "],
+  [". O plano refaz-se sozinho com o que houver nessa altura.", ". The plan remakes itself with whatever there is then."],
+  ["Dano já feito e decisão por batalha", "Damage already done and decision per battle"],
+  ["Batalha / ronda", "Battle / round"],
+  ["O teu dano nesta ronda", "Your damage in this round"],
+  ["O teu dano na batalha", "Your damage in the battle"],
+  ["No plano", "In the plan"],
+  ["A posição e o dano da ronda vêm do ranking merged. O acumulado vem do resumo oficial da batalha. O dano do plano é a mais, com os cortes de agora, o bounty disponível e o objectivo escolhido.", "The round position and damage come from the merged ranking. The total comes from the official battle summary. The plan's damage is extra, with the current cut-offs, the available bounty and the chosen goal."],
+  ["O conjunto vencedor entre ", "The winning set among "],
+  [" combinações de seis peças Epic, Legendary e Mythic — as tuas, as introduzidas à mão e as do mercado. A simulação nunca mexe na tua conta.", " combinations of six Epic, Legendary and Mythic items — yours, the ones entered by hand and the market ones. The simulation never touches your account."],
+  ["% de durabilidade", "% durability"],
+  ["nova · roll médio", "new · average roll"],
+  ["introduzida à mão", "entered by hand"],
+  ["comprar ≈ ", "buy ≈ "],
+  ["já é tua", "already yours"],
+  ["(a tua ", "(your "],
+  [" tem roll ", " has roll "],
+  ["%; a do mercado conta com o roll médio)", "%; the market one counts with the average roll)"],
+  ["Investimento: ", "Investment: "],
+  [". O preço de compra não entra no lucro: ficas com a peça, e o custo de a usar (o desgaste) já está em cada golpe. Sem livro de ordens de equipamento, não há valor de revenda.", ". The purchase price is not in the profit: you keep the item, and the cost of using it (wear) is already in each hit. Without an equipment order book there is no resale value."],
+  ["É o que tens vestido. Não precisas de mudar nada.", "It's what you wear. You don't need to change anything."],
+  ["Atenção:", "Watch out:"],
+  [" esta escolha troca peças tuas por outras do mesmo modelo com um roll pior: ", " this choice swaps your items for others of the same model with a worse roll: "],
+  [". Fazem menos dano e o drop é o mesmo, por isso o lucro por 1k sobe — mas o lucro total pode descer. Compara com «Lucro total» e «Sem compras».", ". They do less damage and the drop is the same, so profit per 1k goes up — but total profit can go down. Compare with «Total profit» and «No purchases»."],
+  ["Sem comprar nada: ", "Without buying anything: "],
+  [". Com este conjunto: ", ". With this set: "],
+  [" de lucro, ", " profit, "],
+  ["Compras sugeridas — uma peça de cada vez", "Suggested purchases — one item at a time"],
+  ["Compras sugeridas", "Suggested purchases"],
+  ["Aparecem depois do primeiro cálculo com dados de agora.", "They appear after the first calculation with current data."],
+  ["Sem dados para comparar.", "No data to compare."],
+  [" em vez de ", " instead of "],
+  ["não compensa", "not worth it"],
+  ["Partindo do que tens vestido (", "Starting from what you wear ("],
+  ["). «Compensa» quer dizer que sobe o lucro por 1k. O preço é a média de vendas do código (gameStat), sem roll. ", "). «Worth it» means it raises profit per 1k. The price is the average sale price of the code (gameStat), without roll. "],
+  ["sem dados: não há livro de ordens de equipamento, só a média de vendas por código", "no data: there is no equipment order book, only the average sale price per code"],
+  ["Desgaste/golpe", "Wear/hit"],
+  ["Desgaste no plano", "Wear in the plan"],
+  ["Lucro actual → novo", "Profit now → new"],
+  ["Δ lucro", "Δ profit"],
+  ["Δ por 1k", "Δ per 1k"],
+  ["estimativa", "estimate"],
+  ["compensa", "worth it"],
+  ["Arma", "Weapon"],
+  ["Capacete", "Helmet"],
+  ["Colete", "Chest"],
+  ["Calças", "Pants"],
+  ["Luvas", "Gloves"],
+  ["Botas", "Boots"],
+  ["vestida", "worn"],
+  ["Resultado económico", "Economic result"],
+  ["Tudo no pior de três cenários de concorrência, salvo onde diz «esperado». Nada disto é garantido: depende do dano que os outros ainda vão fazer.", "Everything in the worst of three competition scenarios, except where it says «expected». None of this is guaranteed: it depends on the damage others will still do."],
+  ["Receita bruta", "Gross revenue"],
+  ["peças, cases e bounty", "items, cases and bounty"],
+  ["munição, comida, desgaste", "ammo, food, wear"],
+  [" de dano · as barras todas", " damage · all the bars"],
+  ["Esta estratégia não é rentável", "This strategy is not profitable"],
+  [" com os dados de agora.", " with current data."],
+  ["Peças do ranking: ", "Ranking items: "],
+  ["Cases (o teu histórico: ", "Cases (your history: "],
+  ["/golpe)", "/hit)"],
+  ["Toolbox, woodenCase, dinheiro de drop", "Toolbox, woodenCase, drop money"],
+  ["sem valor provado", "no proven value"],
+  ["Desgaste das peças", "Item wear"],
+  ["já tomada", "already taken"],
+  ["Investimento adicional (compras): ", "Additional investment (purchases): "],
+  [", fora do lucro. As peças do ranking valem pela média de vendas do código (estimativa, sem roll); as cases pelo livro de ordens.", ", outside the profit. Ranking items are valued at the average sale price of the code (estimate, without roll); cases at the order book."],
+  ["Receita", "Revenue"],
+  ["nenhuma", "none"],
+  ["O que tens vestido", "What you wear"],
+  ["Só Legendary", "Legendary only"],
+  ["Só Mythic", "Mythic only"],
+  ["Só Epic", "Epic only"],
+  ["Híbrida", "Hybrid"],
+  ["Máximo dano", "Maximum damage"],
+  ["Dano com as barras", "Damage with the bars"],
+  ["Dano por golpe", "Damage per hit"],
+  ["Custo por golpe", "Cost per hit"],
+  ["Lucro por 1k", "Profit per 1k"],
+  ["Investimento", "Investment"],
+  ["Com as mesmas barras, ", "With the same bars, "],
+  [" de dano e ", " damage and "],
+  ["; cada golpe de ", "; each hit of "],
+  ["× o de ", "× that of "],
+  [" por 1k, ", " per 1k, "],
+  [" de lucro.", " profit."],
+  ["Comparar equipamento", "Compare equipment"],
+  ["O melhor conjunto de cada família pelo objectivo «", "The best set of each family by the goal «"],
+  ["». * peça tua.", "». * your item."],
+  ["O melhor por 1k (", "The best per 1k ("],
+  ["; o melhor em lucro total dá ", "; the best in total profit gives "],
+  [". Melhor rentabilidade, menos lucro total: ", ". Better return, less total profit: "],
+  [") dá ", ") gives "],
+  ["Monta um conjunto", "Build a set"],
+  ["Repor o que tens vestido", "Reset to what you wear"],
+  ["Usar a recomendada", "Use the recommended one"],
+  ["Guardar (até 4)", "Save (up to 4)"],
+  ["As tuas peças", "Your items"],
+  ["O inventário não está na API pública (", "The inventory is not in the public API ("],
+  [" pede sessão do jogo), por isso não se mostra como completo. Peças que tenhas guardadas, introduz à mão: ficam no browser e entram na pesquisa exaustiva.", " needs a game session), so it is not shown as complete. Items you have stored, enter by hand: they stay in the browser and go into the exhaustive search."],
+  ["a tua (", "yours ("],
+  ["à mão (", "by hand ("],
+  ["Sem resultado para esta combinação (ainda não avaliada).", "No result for this combination (not evaluated yet)."],
+  ["Diferenças contra a recomendada (", "Differences against the recommended one ("],
+  ["). Este conjunto fica em ", "). This set ranks "],
+  ["já não existe nesta pesquisa (as peças mudaram)", "no longer exists in this search (the items changed)"],
+  ["Conjunto ", "Set "],
+  ["Guardados", "Saved"],
+  ["Dano/golpe", "Damage/hit"],
+  ["Posição", "Position"],
+  ["remover", "remove"],
+  ["Durabilidade %", "Durability %"],
+  ["Durabilidade", "Durability"],
+  ["Adicionar", "Add"],
+  ["Recusada: ", "Rejected: "],
+  ["só peças Epic, Legendary ou Mythic de um dos seis slots", "only Epic, Legendary or Mythic items of one of the six slots"],
+  ["durabilidade entre 1 e 100", "durability between 1 and 100"],
+  ["Guardado no browser. O motor vai voltar a fazer a pesquisa exaustiva com estas peças.", "Saved in the browser. The engine will run the exhaustive search again with these items."],
+  ["Sem ligação ao servidor local.", "No connection to the local server."],
+  ["melhor", "best"],
+  ["Peças", "Items"],
+  ["Peça", "Item"],
+  ["O fundo de cada lado é partilhado por todos os que batem desse lado. Observado: o que a API diz agora. Calculado: o ritmo entre leituras guardadas. Estimado: quando esgota a esse ritmo — não é uma garantia.", "Each side's fund is shared by everyone hitting on that side. Observed: what the API says now. Calculated: the rate between stored readings. Estimated: when it runs out at that rate — not a guarantee."],
+  ["Fundo observado", "Observed fund"],
+  ["Ritmo calculado", "Calculated rate"],
+  ["Esgota (estimado)", "Runs out (estimated)"],
+  ["Sem lados com bounty nas rondas lidas.", "No sides with bounty in the read rounds."],
+  ["Raridade de um item novo", "Rarity of a new item"],
+  ["Duas amostras, lado a lado, sem trocar uma pela outra. O motor usa a medida (maior). A raridade é independente da posição: quem entra no pool leva o que lhe calhar na ordem.", "Two samples, side by side, without swapping one for the other. The engine uses the measured one (larger). Rarity is independent of position: whoever enters the pool gets whatever comes in order."],
+  ["medida: ", "measured: "],
+  ["referência histórica: ", "historical reference: "],
+  ["A diferença de Maldives × Ethiopia", "The Maldives × Ethiopia difference"],
+  ["Às 15:59 o pool da batalha tinha ", "At 15:59 the battle pool had "],
+  [" itens contra ", " items against "],
+  [" esperados. Com a batalha acabada (16:21:02): ", " expected. With the battle over (16:21:02): "],
+  [" de dano no ranking — igual ao objecto da batalha (", " damage in the ranking — equal to the battle object ("],
+  [" itens = floor(", " items = floor("],
+  [". A regra confere no fim. A diferença viva veio do dano que entrou enquanto o ranking era lido: o motor media 44 790/s, a ronda acabou a ~83 000/s, e a folga (6 itens) contava com o ritmo medido. ", ". The rule matches at the end. The live difference came from the damage that came in while the ranking was being read: the engine measured 44,790/s, the round ended at ~83,000/s, and the slack (6 items) counted on the measured rate. "],
+  ["Explicado", "Explained"],
+  [", com uma lição: perto do fim da ronda a folga tem de usar o ritmo pior.", ", with a lesson: near the end of the round the slack has to use the worse rate."],
+  ["Por investigar.", "To investigate."],
+  ["Rondas lidas — ranking merged", "Rounds read — merged ranking"],
+  ["Itens > jogadores", "Items > players"],
+  ["Regra (ronda)", "Rule (round)"],
+  ["Regra (batalha)", "Rule (battle)"],
+  ["Erro da projecção", "Projection error"],
+  ["Pool da ronda = floor(dano ÷ 200 000); da batalha = floor(dano ÷ 500 000); os itens vão para os melhores do ranking dos dois lados somados, um por jogador. Confere em cada leitura (inversões, itens abaixo do corte, contagem).", "Round pool = floor(damage ÷ 200,000); battle pool = floor(damage ÷ 500,000); the items go to the best of the ranking of both sides added together, one per player. Checked on every reading (inversions, items below the cut, count)."],
+  ["Verificações da regra — leitura viva e resultado final", "Rule checks — live reading and final result"],
+  ["Uma leitura viva com a contagem fora da folga e sem inversões fica ", "A live reading with the count outside the slack and no inversions stays "],
+  [": as páginas lêem-se enquanto o dano entra. No fim lê-se o ranking final e decide-se. Com inversões, ou se o final também não conferir, é ", ": the pages are read while damage comes in. At the end the final ranking is read and it is decided. With inversions, or if the final one doesn't match either, it is "],
+  [". Nada fica escondido.", ". Nothing is hidden."],
+  ["Ronda · pool", "Round · pool"],
+  ["Leitura viva (itens / esperados)", "Live reading (items / expected)"],
+  ["Resultado final", "Final result"],
+  [" · folga ", " · slack "],
+  [" inversões · ", " inversions · "],
+  [" inversões — ", " inversions — "],
+  ["à espera do fim da ronda", "waiting for the end of the round"],
+  ["Todas as leituras vivas conferem.", "All live readings match."],
+  ["por confirmar no fim da ronda", "to confirm at the end of the round"],
+  ["discrepância confirmada", "confirmed discrepancy"],
+  ["confirmado no fim", "confirmed at the end"],
+  ["dados indisponíveis", "data unavailable"],
+  ["confirmado", "confirmed"],
+  ["no fim confere: a diferença viva era dano a entrar enquanto as páginas eram lidas", "matches at the end: the live difference was damage coming in while the pages were read"],
+  ["o ranking final também não confere com a regra", "the final ranking does not match the rule either"],
+  ["a esgotar", "running out"],
+  ["estável ou a subir", "stable or rising"],
+  ["sem dados suficientes", "not enough data"],
+  ["ainda não paga", "not paying yet"],
+  ["a pagar", "paying"],
+  ["sem bounty", "no bounty"],
+  ["sem fundo", "no fund"],
+  ["esgotado", "depleted"],
+  ["Leituras", "Readings"],
+  ["Jogadores", "Players"],
+  ["Itens", "Items"],
+  ["Lado", "Side"],
+  ["Estado", "State"],
+  ["Drops por batalha", "Drops per battle"],
+  ["A ler…", "Reading…"],
+  ["O dano mínimo para cada raridade em cada batalha activa, como o ", "The minimum damage for each rarity in each active battle, like "],
+  [" (as mesmas funções, carregadas do script sem o alterar): a ronda ao vivo — ou a última com drops — e o ranking da batalha inteira, no ranking merged.", " (the same functions, loaded from the script without changing it): the live round — or the last one with drops — and the ranking of the whole battle, in the merged ranking."],
+  ["Por dano (Rare)", "By damage (Rare)"],
+  ["A acabar primeiro", "Ending first"],
+  ["Ordem", "Order"],
+  [" batalhas lidas · volta ", " battles read · pass "],
+  [" na fila", " queued"],
+  ["Drops da ronda", "Round drops"],
+  ["Drops da batalha", "Battle drops"],
+  ["Acaba em", "Ends in"],
+  ["Ainda nenhuma batalha lida.", "No battle read yet."],
+  ["Cada valor é o dano de quem ficou com a última peça dessa raridade (passa o rato para ver o rank e a peça). «-»: essa raridade não saiu. «Acaba em» é o mínimo, se o lado que vai à frente ganhar todos os ticks. Esta aba lê com a prioridade mais baixa: só usa os pedidos que sobram ao assistente (no limite dos 45/min), por isso dá a volta a todas as batalhas devagar; a hora de cada linha diz quando foi lida.", "Each value is the damage of whoever got the last item of that rarity (hover to see the rank and the item). «-»: that rarity did not drop. «Ends in» is the minimum, if the side ahead wins every tick. This tab reads at the lowest priority: it only uses the requests the assistant leaves over (within the 45/min limit), so it goes through all battles slowly; each row's time says when it was read."],
+  ["torneio", "tournament"],
+  ["resistência", "resistance"],
+  ["ao vivo", "live"],
+  ["tu: ", "you: "],
+  [" na ronda (#", " in the round (#"],
+  ["Ainda não houve mudanças de preço desde o último cálculo completo.", "No price changes since the last full calculation yet."],
+  ["Preços — materialidade", "Prices — materiality"],
+  ["a agrupar ", "grouping "],
+  [" do livro de ordens desde as ", " of the order book since "],
+  ["Mudanças: ", "Changes: "],
+  ["só arredondamentos", "only rounding"],
+  ["O que se refez", "What was redone"],
+  ["só as contas (comida, cases, desgaste)", "only the totals (food, cases, wear)"],
+  ["divisão refeita (o preço da munição mudou)", "split redone (the ammo price changed)"],
+  ["os conjuntos mudaram: tudo de novo", "the sets changed: everything again"],
+  ["Conjuntos recontados (contas exactas)", "Sets recounted (exact totals)"],
+  ["Divisão pelas rondas", "Split across the rounds"],
+  ["a mesma (comida e cases não a mudam)", "the same (food and cases do not change it)"],
+  ["Tempo total", "Total time"],
+  [" s a reler a base)", " s re-reading the base)"],
+  ["O vencedor mudou?", "Did the winner change?"],
+  ["Vida, fome, pílula", "Life, hunger, pill"],
+  ["Batalhas, rondas e fundos de bounty", "Battles, rounds and bounty funds"],
+  ["Equipamento vestido", "Worn equipment"],
+  ["Preços de munição, comida, cases", "Ammo, food and case prices"],
+  ["Preços de equipamento", "Equipment prices"],
+  ["Histórico de cases", "Case history"],
+  ["Dano acumulado do jogador por batalha", "Player's total damage per battle"],
+  ["Regras do jogo", "Game rules"],
+  ["Países", "Countries"],
+  ["Escolha das rondas (jogadores por ronda)", "Choice of rounds (players per round)"],
+  ["Validação das previsões", "Prediction checks"],
+  ["Confirmação da regra no fim da ronda", "Rule confirmation at the end of the round"],
+  ["Aba Drops: todas as batalhas (como o warera_drops.py)", "Drops tab: all battles (like warera_drops.py)"],
+  [" fora de ordem", " out of order"],
+  ["Lucro (pior cenário)", "Profit (worst case)"],
+  ["saiu da lista", "left the list"],
+  ["nada de relevante", "nothing relevant"],
+  ["equipamento ou base", "equipment or base"],
+  ["preços (materialidade)", "prices (materiality)"],
+  ["vida e fome", "life and hunger"],
+  ["primeiro cálculo", "first calculation"],
+  ["Motor e recálculo contínuo", "Engine and continuous recalculation"],
+  ["Enquanto esta página está aberta, cada fonte volta a ler-se ao seu ritmo, com um limitador central. Só se recalcula o que a mudança afecta; enquanto o cálculo corre, fica a última estratégia válida.", "While this page is open, each source is read again at its own pace, with a central limiter. Only what a change affects is recalculated; while the calculation runs, the last valid strategy stays."],
+  ["A calcular: ", "Calculating: "],
+  ["último: ", "last: "],
+  ["tabelas das rondas", "round tables"],
+  [" janelas)", " windows)"],
+  ["Divisão das barras pelas rondas (por metade de dano, para todos os golpes): ", "Split of the bars across the rounds (per damage half, for all hit counts): "],
+  [". Contas dos ", ". Totals of the "],
+  [" conjuntos: ", " sets: "],
+  [". Publicação: ", ". Publication: "],
+  [" Cálculos abandonados por dados mais recentes: ", " Calculations dropped for newer data: "],
+  ["Ainda sem cálculos.", "No calculations yet."],
+  ["Idade", "Age"],
+  ["Ritmo", "Pace"],
+  ["Próxima", "Next"],
+  ["Fonte", "Source"],
+  [" pedidos no último minuto", " requests in the last minute"],
+  [" pedidos ao jogo desde que o servidor arrancou · ", " requests to the game since the server started · "],
+  [" recusas 429 · ", " 429 refusals · "],
+  [" em fila. O limite total da API é 100/min; o assistente usa ", " queued. The total API limit is 100/min; the assistant uses "],
+  ["O que mudou no último cálculo", "What changed in the last calculation"],
+  ["Nos dados", "In the data"],
+  ["Ainda só há um cálculo.", "There is only one calculation so far."],
+  ["Histórico de estratégias", "Strategy history"],
+  ["ainda sem histórico", "no history yet"],
+  ["Previsto contra observado", "Predicted against observed"],
+  ["Rondas já acabadas: o erro da hora de fim e a raridade que o dano planeado teria levado no ranking final.", "Rounds already over: the error in the end time and the rarity the planned damage would have got in the final ranking."],
+  ["Erro do fim", "End error"],
+  ["previsto tier ", "predicted tier "],
+  ["Ainda sem rondas acabadas para comparar.", "No finished rounds to compare yet."],
+  ["Raridade", "Rarity"],
+  ["Regra", "Rule"],
+  ["De onde vem cada número", "Where each number comes from"],
+  ["Vida, fome, pílula — user.getUserById", "Life, hunger, pill — user.getUserById"],
+  ["Recuperação às horas certas (+10% do máximo) — 4 leituras a 19/11", "Recovery on the hour (+10% of max) — 4 readings on 19/11"],
+  ["Comer gasta 1 ponto inteiro de fome; bater pede vida ≥ custo do golpe", "Eating uses 1 whole hunger point; hitting needs life ≥ the hit cost"],
+  ["Equipamento vestido, roll e durabilidade — inventory.fetchCurrentEquipment", "Worn equipment, roll and durability — inventory.fetchCurrentEquipment"],
+  ["Inventário — só com sessão do jogo", "Inventory — only with a game session"],
+  ["Peças introduzidas à mão — guardadas no teu browser", "Items entered by hand — stored in your browser"],
+  ["Batalhas, rondas, ranking merged — battle.getBattles, battleRanking.getRanking", "Battles, rounds, merged ranking — battle.getBattles, battleRanking.getRanking"],
+  ["Bounty por lado e fundo — moneyPer1kDamages, moneyPool", "Bounty per side and fund — moneyPer1kDamages, moneyPool"],
+  ["Ritmo de esgotamento do fundo — leituras guardadas", "Fund depletion rate — stored readings"],
+  ["Munição, comida, pílula, cases — melhor ordem do livro (tradingOrder.getTopOrders)", "Ammo, food, pill, cases — best order in the book (tradingOrder.getTopOrders)"],
+  ["Peças de equipamento — média de vendas por código, sem roll (gameStat)", "Equipment items — average sale price per code, without roll (gameStat)"],
+  ["Abrir uma case1 vale ≈ ", "Opening a case1 is worth ≈ "],
+  [" pelas tuas ", " by your "],
+  [" aberturas; vendê-la: ", " openings; selling it: "],
+  [" abertas), woodenCase (", " opened), woodenCase ("],
+  ["), dinheiro de drop", "), drop money"],
+  ["Ressaca da pílula −60% — confirmado na API a 20/11 (attack.debuffsPercent = 60; debuffEndAt = fim do buff + 15,5 h)", "Pill hangover −60% — confirmed in the API on 20/11 (attack.debuffsPercent = 60; debuffEndAt = end of buff + 15.5 h)"],
+  ["ordem aberta", "open order"],
+  ["verificado", "verified"],
+  ["por confirmar", "to confirm"],
+  ["indisponível", "unavailable"],
+  ["observado", "observed"],
+  ["calculado", "calculated"],
+  ["tuas", "yours"],
+  ["Prova da pesquisa exaustiva", "Proof of the exhaustive search"],
+  [" conjuntos × munição × comida = ", " sets × ammo × food = "],
+  [" builds. Para cada uma, o plano até esvaziar as barras: o que cada dano rende em cada ronda sai das contas do ", " builds. For each one, the plan to empty the bars: what each damage yields in each round comes from the maths of "],
+  [" do projecto (2 424 linhas comparadas, 0 diferenças — ", " of the project (2,424 lines compared, 0 differences — "],
+  ["), e a divisão dos golpes pelas rondas é exacta (programação dinâmica; 0 diferenças contra força bruta).", "), and the split of hits across the rounds is exact (dynamic programming; 0 differences against brute force)."],
+  ["A comida, o desgaste e as cases custam o mesmo em todos os golpes, por isso não mudam a divisão: ela faz-se por metade de dano (arma, luvas, capacete) e para todos os golpes de uma vez. Vida e fome novas são só outra leitura.", "Food, wear and cases cost the same on every hit, so they do not change the split: it is done per damage half (weapon, gloves, helmet) and for all hit counts at once. New life and hunger are just another reading."],
+  ["O motor do projecto só procura ", "The project's engine only searches "],
+  [" destes conjuntos (a fronteira de ", " of these sets (the frontier of "],
+  [" builds), porque descarta peças com stats piores.", " builds), because it discards items with worse stats."],
+  ["Vencedor exaustivo: ", "Exhaustive winner: "],
+  ["/1k). Melhor no espaço do motor: ", "/1k). Best in the engine's space: "],
+  ["Diferentes — é por isso que a pesquisa é exaustiva.", "Different — that's why the search is exhaustive."],
+  ["Iguais.", "The same."],
+  ["Limites que continuam", "Remaining limits"],
+  ["A projecção dos concorrentes chegou a errar mais de 100% em 30 min; por isso o lucro é o do pior de três cenários.", "The competitors' projection was off by more than 100% in 30 min; that's why profit is the worst of three scenarios."],
+  ["O custo de comida conta-se em todos os golpes, mesmo os que a recuperação paga.", "The food cost counts on every hit, even those paid by recovery."],
+  ["Os golpes das barras são os esperados (a esquiva poupa vida em média): o dano real de cada ronda varia um pouco. Bate em cada ronda até chegares ao dano dela.", "The bars' hits are the expected ones (dodging saves life on average): the real damage of each round varies a little. Hit in each round until you reach its damage."],
+  ["Preços de equipamento sem roll; sem valor de revenda.", "Equipment prices without roll; no resale value."],
+  ["O bounty é limitado pelo fundo inteiro, que é partilhado; o ritmo de esgotamento só aparece com duas leituras.", "Bounty is limited by the whole fund, which is shared; the depletion rate only shows up with two readings."],
+  ["até às", "until"],
+  ["Até às", "Until"],
+  ["O que fazer agora · já", "What to do · right now"],
+  ["Começar", "Start"],
+  ["Automático", "Automatic"],
+  ["Dano do plano", "Damage in the plan"],
+  ["Os golpes que dão lucro", "The hits that pay"],
+  [" · ficam ", " · left: "],
+  [" para depois", " for later"],
+  ["Nenhuma ronda aberta dá lucro agora: as barras ficam para depois.", "No open round pays right now: the bars stay for later."],
+  ["Nenhuma ronda aberta dá lucro agora: guarda as barras.", "No open round pays right now: keep the bars."],
+  [" · é a única ronda do plano", " · it is the only round in the plan"],
+  ["O plano: bate onde dá lucro, guarda o resto", "The plan: hit where it pays, keep the rest"],
+  ["Com a vida (", "With the life ("],
+  [") e a fome (", ") and the hunger ("],
+  [") de agora, os golpes vão para as rondas abertas da forma que dá mais lucro no pior cenário, e só até onde o lucro sobe: o que não dá lucro agora fica nas barras para outras oportunidades.", ") you have now, the hits go to the open rounds in the way that gives the most profit in the worst case, and only as far as profit keeps rising: what doesn't pay now stays in the bars for other opportunities."],
+  [", os golpes vão para as rondas abertas da forma que dá mais lucro no pior cenário, e só até onde o lucro sobe: o que não dá lucro agora fica nas barras para outras oportunidades.", ", the hits go to the open rounds in the way that gives the most profit in the worst case, and only as far as profit keeps rising: what doesn't pay now stays in the bars for other opportunities."],
+  [" O objectivo escolhe o equipamento; com ele, bate-se até onde o lucro sobe.", " The goal picks the equipment; with it, you hit as far as profit keeps rising."],
+  ["Golpes por ponto de fome", "Hits per hunger point"],
+  ["Dano no plano", "Damage in the plan"],
+  ["Lucro no plano", "Profit in the plan"],
+  ["Ficam para depois", "Left for later"],
+  ["nada", "nothing"],
+  ["Cada comida repõe uma parte diferente da vida: a que dá mais golpes por ponto de fome deixa mais golpes para depois. «Automático» escolhe a de mais lucro agora e não põe preço nos golpes que ficam — esses contam-se em golpes.", "Each food restores a different share of life: the one with more hits per hunger point leaves more hits for later. «Automatic» picks the most profitable now and puts no price on the hits that are left — those are counted in hits."],
+  ["Ordens", "Orders"],
+  ["sem preferência", "no preference"],
+  ["Nenhuma das rondas abertas tem ordem do teu país ou da tua MU.", "None of the open rounds has an order from your country or your MU."],
+  ["Com a preferência: ", "With the preference: "],
+  [" de dano onde há ordem tua (sem ela: ", " damage where you have an order (without it: "],
+  ["), por ", "), for "],
+  [" de lucro (", " profit ("],
+  [" sem a preferência). Os mesmos golpes; uma ronda de grande valor sem ordem só se larga se a perda couber no limite.", " without the preference). The same hits; a high-value round without an order is only dropped if the loss fits the limit."],
+  ["Sem preferência: o plano é só o de mais lucro (", "No preference: the plan is just the most profitable one ("],
+  [" de dano onde há ordem tua).", " damage where you have an order)."],
+  ["Pôr mais dano onde há ordem custava mais de ", "Putting more damage where you have an order would cost more than "],
+  [" do lucro: fica o plano de mais lucro (", " of the profit: the most profitable plan stays ("],
+  [" O bónus das ordens (+20% cada, prioridade alta) já está no dano de cada golpe; isto é a tua preferência por onde bater.", " The orders' bonus (+20% each, high priority) is already in each hit's damage; this is your preference for where to hit."],
+  ["ordem do país", "country order"],
+  ["ordem da MU", "MU order"],
+  ["Fica para depois", "Left for later"],
+  [" (já era tua)", " (already yours)"],
+  [" + contrato", " + contract"],
+  [" (medido)", " (measured)"],
+  [" · contrato +", " · contract +"],
+  [" · contrato ", " · contract "],
+  ["Contrato da MU (medido)", "MU contract (measured)"],
+  [": recebeste ", ": you received "],
+  [" de contrato por ", " in contract for "],
+  [" · nesse intervalo já não pagou: o plano não o conta", " · it no longer paid in that interval: the plan doesn't count it"],
+  [" · conta-se no ", " · counted on "],
+  ["o lado com a ordem da tua MU", "the side with your MU's order"],
+  ["o único lado em que podes bater nesta batalha", "the only side you can hit in this battle"],
+  [" · não se conta: ", " · not counted: "],
+  ["a batalha tem mais de um lado possível e o resumo não diz em qual", "the battle has more than one possible side and the summary doesn't say which"],
+  ["A taxa é a que recebeste entre duas leituras do teu resumo da batalha, não a do contrato (os contratos ganhos não são públicos). Se o contrato começou a meio do intervalo, a taxa real é maior. Sem tecto: o orçamento do contrato não se vê.", "The rate is what you received between two readings of your battle summary, not the contract's own rate (won contracts are not public). If the contract started mid-interval, the real rate is higher. No cap: the contract's budget can't be seen."],
+  [" · depois a outra ronda (", " · then the other round ("],
+  [" (tinhas ", " (you had "],
+  [" O lucro conta só o que o dano novo acrescenta: a peça que o dano já feito te garante não entra.", " Profit counts only what the new damage adds: the item your damage so far already secures is not counted."],
+  ["Nada: com esta comida, todos os golpes das barras dão lucro agora.", "Nothing: with this food, every hit in the bars pays right now."],
+  ["Ficam ", "Left: "],
+  [" nas barras (vida ", " in the bars (life "],
+  [", fome ", ", hunger "],
+  [" · comes ", " · you eat "],
+  [" · sem comer", " · without eating"],
+  [" Se os gastasses também, davam mais ", " If you spent them too, they would give "],
+  [" de dano e ", " more damage and "],
+  [" de lucro.", " profit."],
+  [" Se não bateres mais, a vida enche ", " If you don't hit any more, life fills up "],
+  [": o que recuperares a partir daí perde-se.", ": whatever you recover after that is lost."],
+  ["já está cheia", "already full"],
+  ["A próxima hora", "The next hour"],
+  [". Cada comida repõe uma parte diferente da vida e custa diferente: muda quantos golpes as barras dão e o custo de cada um. «Automático» escolhe a de mais lucro.", ". Each food restores a different share of life and costs differently: it changes how many hits the bars give and the cost of each. «Automatic» picks the most profitable."],
+  ["Só lê a API pública do jogo · não mexe na tua conta", "Reads only the game's public API · never touches your account"],
+  ["Corre no teu browser · só lê a API pública do jogo · não mexe na tua conta", "Runs in your browser · reads only the game's public API · never touches your account"],
+  ["Jogador", "Player"],
+  ["Escolhe o jogador", "Choose the player"],
+  ["Procura pelo nome no jogo, aqui em cima. A página só lê o jogo depois de escolheres — e corre no teu browser, com a tua quota da API.", "Search by in-game name, up here. The page only reads the game after you choose — and it runs in your browser, with your own API quota."],
+  [" na ronda", " in the round"],
+  [" na batalha", " in the battle"],
+  ["/min · alvo ", "/min · target "],
+  [" · máx. ", " · max "],
+  ["de dano", "damage"],
+  ["a mais", "more"],
+  ["corre no teu browser · só lê a API pública · não mexe na tua conta", "runs in your browser · reads only the public API · never touches your account"],
+  [" (no browser, uma leitura longa pode ir além, mas nunca passa de ", " (in the browser a long read can go above it, but never beyond "],
+  ["Já", "Now"],
+  ["já", "now"],
+  ["Agora", "Now"],
+  ["agora", "now"],
+  ["Às", "At"],
+  ["às", "at"],
+  ["até", "until"],
+  ["nível", "level"],
+  ["Vida", "Life"],
+  ["vida", "life"],
+  ["Fome", "Hunger"],
+  ["fome", "hunger"],
+  ["Pílula", "Pill"],
+  ["pílula", "pill"],
+  ["ressaca", "hangover"],
+  ["Motor", "Engine"],
+  ["rondas", "rounds"],
+  ["Rondas", "Rounds"],
+  ["ronda", "round"],
+  ["Ronda", "Round"],
+  ["batalhas", "battles"],
+  ["batalha", "battle"],
+  ["Batalha", "Battle"],
+  ["golpes", "hits"],
+  ["golpe", "hit"],
+  ["Dano", "Damage"],
+  ["dano", "damage"],
+  ["Lucro", "Profit"],
+  ["lucro", "profit"],
+  ["Custos", "Costs"],
+  ["custos", "costs"],
+  ["custa", "costs"],
+  ["Munição", "Ammo"],
+  ["Comida", "Food"],
+  ["esperado", "expected"],
+  ["Por 1k", "Per 1k"],
+  ["por 1k", "per 1k"],
+  ["fundo", "fund"],
+  ["acabou", "over"],
+  ["novo", "new"],
+  ["mudou", "changed"],
+  ["igual", "same"],
+  ["entrou", "entered"],
+  ["saiu", "left"],
+  ["sim", "yes"],
+  ["não", "no"],
+  ["Lida", "Read"],
+  ["ver", "view"],
+  ["confere", "matches"],
+  ["a ler…", "reading…"],
+  ["a ler", "reading"],
+  ["por ler", "not read yet"],
+  ["erro", "error"],
+  ["itens", "items"],
+  ["refeita", "redone"],
+  ["leituras", "readings"],
+  ["leitura", "reading"],
+  ["contra", "against"],
+  ["faz", "does"],
+  ["dá", "gives"],
+  ["Plano", "Plan"],
+  ["normal", "normal"]
+  ]
+};
+</script>
+<script>window.MODO_WEB = true;</script>
+<script>
+(function(){
+"use strict";
+const $ = id => document.getElementById(id);
+const IMG = 'https://media.warera.io/images/items/';
+const ARMAS = new Set(['knife','gun','rifle','sniper','tank','jet']);
+const RN = {common:'Common',uncommon:'Uncommon',rare:'Rare',epic:'Epic',legendary:'Legendary',mythic:'Mythic'};
+const OBJ = {
+  regra:{rot:'Lucro por 1k de dano', curto:'por 1k', nota:'O critério principal: o maior lucro líquido por cada 1000 de dano. Desempates: lucro total, dano útil, menor investimento.'},
+  lucro:{rot:'Lucro total', curto:'lucro total', nota:'Para comparar: o maior lucro líquido total. O lucro por 1k só desempata.'},
+  sem:{rot:'Sem compras', curto:'sem compras', nota:'Só o que já tens (vestido ou introduzido à mão), com a melhor munição e comida em cada batalha.'}
+};
+const I = {
+  vida:'<svg class="i" viewBox="0 0 24 24"><path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7z"/></svg>',
+  fome:'<svg class="i" viewBox="0 0 24 24"><path d="M3 11h18"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M8 7c0-1 1-1.5 1-2.5M12 7c0-1 1-1.5 1-2.5M16 7c0-1 1-1.5 1-2.5"/></svg>',
+  pil:'<svg class="i" viewBox="0 0 24 24"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7z"/><path d="m8.5 8.5 7 7"/></svg>',
+  raio:'<svg class="i" viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></svg>',
+  rel:'<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  calc:'<svg class="i" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>',
+  av:'<svg class="i" viewBox="0 0 24 24"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>',
+  mais:'<svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>',
+  rep:'<svg class="i" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>',
+  guard:'<svg class="i" viewBox="0 0 24 24"><path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>',
+  alvo:'<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>',
+  lixo:'<svg class="i" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>',
+};
+const esc = s => String(s==null?'':s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const store0 = {get(k2, d){ try { const v = localStorage.getItem(k2); return v==null ? d : JSON.parse(v); } catch(e){ return d; } }};
+let LINGUA = store0.get('v3.lingua', (navigator.language || 'pt').toLowerCase().startsWith('pt') ? 'pt' : 'en');
+const n = (v,c=0) => (v==null||!isFinite(v)) ? '—' : Number(v).toLocaleString(LINGUA === 'en' ? 'en-GB' : 'pt-PT',{minimumFractionDigits:c,maximumFractionDigits:c});
+// ---- a camada de ingles
+const TR = (() => {
+  const L = window.LINGUA_EN || {rx: [], frases: []};
+  const rx = L.rx.map(([a, b]) => [new RegExp(a, 'gu'), b]);
+  const letra = /\p{L}/u, mapa = new Map();
+  const fr = L.frases.slice().sort((a, b) => b[0].length - a[0].length);
+  const alt = fr.map(([a, b]) => { mapa.set(a, b); const e = a.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return (letra.test(a[0]) ? '(?<!\\p{L})' : '') + e + (letra.test(a[a.length - 1]) ? '(?!\\p{L})' : ''); });
+  const grande = alt.length ? new RegExp(alt.join('|'), 'gu') : null;
+  return t => { if (!t || !/\p{L}/u.test(t)) return t; let r = t; for (const [x, y] of rx) r = r.replace(x, y);
+    return grande ? r.replace(grande, m => mapa.has(m) ? mapa.get(m) : m) : r; };
+})();
+const ORIGINAL = new WeakMap();   // o portugues de cada no traduzido (para voltar)
+function traduzirNo(raiz){
+  if (LINGUA !== 'en' || !raiz) return;
+  if (raiz.nodeType === 3) { const t0 = raiz.nodeValue, t1 = TR(t0); if (t1 !== t0) { if (!ORIGINAL.has(raiz)) ORIGINAL.set(raiz, t0); raiz.nodeValue = t1; } return; }
+  if (raiz.nodeType !== 1 || raiz.tagName === 'SCRIPT' || raiz.tagName === 'STYLE') return;
+  for (const at of ['title', 'placeholder']) { const v = raiz.getAttribute && raiz.getAttribute(at); if (v) { const t1 = TR(v); if (t1 !== v) raiz.setAttribute(at, t1); } }
+  const w = document.createTreeWalker(raiz, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT, {acceptNode: x => (x.nodeType === 1 && (x.tagName === 'SCRIPT' || x.tagName === 'STYLE')) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT});
+  let x; while ((x = w.nextNode())) {
+    if (x.nodeType === 3) { const t0 = x.nodeValue, t1 = TR(t0); if (t1 !== t0) { if (!ORIGINAL.has(x)) ORIGINAL.set(x, t0); x.nodeValue = t1; } }
+    else for (const at of ['title', 'placeholder']) { const v = x.getAttribute(at); if (v) { const t1 = TR(v); if (t1 !== v) x.setAttribute(at, t1); } }
+  }
+}
+const OBS = new MutationObserver(muts => {
+  if (LINGUA !== 'en') return;
+  OBS.disconnect();
+  for (const m of muts) { if (m.type === 'characterData') traduzirNo(m.target); else m.addedNodes.forEach(traduzirNo); }
+  OBS.observe(document.body, {childList: true, subtree: true, characterData: true});
+});
+OBS.observe(document.body, {childList: true, subtree: true, characterData: true});
+function aplicarLingua(){
+  document.documentElement.lang = LINGUA === 'en' ? 'en' : 'pt';
+  document.title = LINGUA === 'en' ? 'Combat assistant' : 'Assistente de combate';
+  const b = document.getElementById('lingua'); if (b) b.textContent = LINGUA === 'en' ? 'PT' : 'EN';
+  if (LINGUA === 'en') traduzirNo(document.body);
+}
+const sn = (v,c=1) => (v==null||!isFinite(v)) ? '—' : (v>0?'+':v<0?'−':'') + n(Math.abs(v),c);
+const k = v => (v==null) ? '—' : (Math.abs(v)>=1e6 ? n(v/1e6,2)+'M' : Math.abs(v)>=1000 ? n(v/1000,1)+'k' : n(v));
+const hm = h => { if(h==null) return '—'; const m=Math.max(0,Math.round(h*60)); return m<60? m+' min' : Math.floor(m/60)+' h '+String(m%60).padStart(2,'0'); };
+const hhmm = iso => iso ? new Date(iso).toISOString().slice(11,16) : '—';
+const hhmmss = iso => iso ? new Date(iso).toISOString().slice(11,19) : '—';
+const raro = s => (s||'').toLowerCase();
+const idade = iso => iso ? (Date.now() - new Date(iso).getTime())/1000 : null;
+const agoraTxt = s => s==null ? '—' : s < 60 ? 'há '+Math.round(s)+' s' : s < 3600 ? 'há '+Math.round(s/60)+' min' : 'há '+n(s/3600,1)+' h';
+function img(slot, code){ return IMG + (slot==='weapon' ? code : slot) + '.png'; }
+const store = {
+  get(k2, d){ try { const v = localStorage.getItem(k2); return v==null ? d : JSON.parse(v); } catch(e){ return d; } },
+  set(k2, v){ try { localStorage.setItem(k2, JSON.stringify(v)); } catch(e){} }
+};
+
+// ---------------------------------------------------------------- web (GitHub Pages): o Python corre num Web Worker
+// Os mesmos caminhos da API local; no modo web respondem-lhes o Worker (trabalhador.js), sem servidor.
+const WEB = !!window.MODO_WEB;
+let TRAB = null, webPronto = false, webTxt = 'python';
+const CACHE_API = {}, PEND = {};
+let seqPed = 0;
+function iniciarWeb(){
+  TRAB = new Worker('trabalhador.js');
+  TRAB.onmessage = e => { const m = e.data;
+    if (m.tipo === 'api') CACHE_API[m.caminho] = m.corpo;
+    else if (m.tipo === 'resposta') { const p = PEND[m.id]; delete PEND[m.id]; if (p) (m.codigo < 400 ? p.ok : p.falha)(m.corpo); }
+    else if (m.tipo === 'progresso') { webTxt = m.txt; if (!D) aEspera(); ligacao(); }
+    else if (m.tipo === 'pronto') { webPronto = true; if (!JOG) { painelJogador(); aEspera(); } }
+    else if (m.tipo === 'erro') { console.error(m.txt); if (!webPronto) { webTxt = 'erro'; webErro = m.txt; aEspera(); } }
+  };
+  TRAB.postMessage({tipo:'iniciar', jogador: store.get('v3.jogador', null)});
+  addEventListener('pagehide', () => TRAB && TRAB.postMessage({tipo:'guardar'}));
+}
+let webErro = '';
+// diagnostico (consola do browser): o estado das fontes e do motor, tal como o servidor o da
+window.combateDiag = () => S && {motor: S.motor && {estado: S.motor.estado, erros: S.motor.erros},
+  fontes: (S.fontes || []).map(f => [f.nome, f.estado, f.lido_em, f.erro]), limitador: S.limitador};
+function pedirTrab(metodo, caminho, corpo){
+  return new Promise((ok, falha) => { const id = ++seqPed; PEND[id] = {ok, falha};
+    TRAB.postMessage({tipo:'pedido', id, metodo, caminho, corpo: corpo == null ? '' : JSON.stringify(corpo)}); });
+}
+async function enviar(caminho, corpo){
+  if (WEB) return JSON.parse(await pedirTrab('POST', caminho, corpo));
+  const r = await fetch(caminho, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(corpo)});
+  return r.json();
+}
+
+let D = null, S = null, versao = -1, versaoRec = -1, ligado = false, ultimoOk = 0;
+let obj = store.get('v3.obj', 'regra'); if (!OBJ[obj]) obj = 'regra';
+// o que fica no browser e de cada jogador: os conjuntos guardados, as pecas a mao, o conjunto do simulador
+let JOG = store.get('v3.jogador', null);
+const kj = k => JOG ? k + ':' + JOG : k;
+let sel = null, guard = store.get(kj('v3.guardados'), []), manuais = store.get(kj('v3.manuais'), []);
+let COMIDA = store.get(kj('v3.comida'), null);      // a comida escolhida (null: a de mais lucro)
+let ORDENS = store.get(kj('v3.ordens'), null);      // V3.3: quanto do lucro se aceita perder por bater onde ha ordem (null: o do motor)
+function carregarDoJogador(){
+  guard = store.get(kj('v3.guardados'), []); manuais = store.get(kj('v3.manuais'), []); sel = store.get(kj('v3.sel'), null);
+  COMIDA = store.get(kj('v3.comida'), null); ORDENS = store.get(kj('v3.ordens'), null);
+  enviar('/api/pecas', manuais).catch(() => {});
+  enviar('/api/comida', {comida: COMIDA}).catch(() => {});
+  if (ORDENS != null) enviar('/api/ordens', {tolerancia: ORDENS}).catch(() => {});
+}
+let anteriores = {};   // valores mostrados antes, para destacar o que mudou
+
+// ---------------------------------------------------------------- regras (iguais as do motor3.py)
+// so se bate com vida >= custo de um golpe nao esquivado; comer gasta 1 ponto inteiro de fome (por confirmar)
+function golpesCom(vida, fome, vgEsp, vgCheio, vc){
+  const v = vida + Math.floor(fome + 1e-9) * vc;
+  if (vgCheio <= 0 || v + 1e-9 < vgCheio) return [0, 0];
+  const gar = Math.floor(v / vgCheio + 1e-9);          // a mesma tolerancia do motor3.golpes_com
+  const esq = Math.max(0, Math.min(0.95, 1 - vgEsp / vgCheio));
+  return [gar, Math.floor(gar / (1 - esq) + 1e-9)];
+}
+const chaveObj = {
+  regra: r => [Math.round(r.r*100)/100, Math.round(r.l*100)/100, r.d, -r.c],
+  lucro: r => [Math.round(r.l*100)/100, Math.round(r.r*100)/100, r.d, -r.c],
+  sem:   r => [r.c===0?1:0, Math.round(r.r*100)/100, Math.round(r.l*100)/100, r.d]
+};
+const maior = (a,b) => { for (let i=0;i<a.length;i++){ if (a[i]!==b[i]) return a[i]>b[i]; } return false; };
+
+// ---------------------------------------------------------------- ligacao e ciclo
+async function obter(url){
+  if (WEB) {
+    if (url in CACHE_API) return JSON.parse(CACHE_API[url]);
+    if (url === '/api/estado' || url === '/api/estrategia' || url === '/api/drops') throw new Error('a arrancar');
+    return JSON.parse(await pedirTrab('GET', url));
+  }
+  const r = await fetch(url, {cache:'no-store'}); if (!r.ok) throw new Error(r.status); return r.json();
+}
+async function ciclo(){
+  try {
+    S = await obter('/api/estado');
+    ligado = true; ultimoOk = Date.now();
+    if (S.jogador && S.jogador.id && S.jogador.id !== JOG) { JOG = S.jogador.id; carregarDoJogador(); }
+    if (S.versao !== versao || S.versao_recursos !== versaoRec || !D) {
+      const novo = await obter('/api/estrategia');
+      const mudouEstrategia = D && novo.versao !== D.versao;
+      D = novo; versao = S.versao; versaoRec = S.versao_recursos;
+      if (!D) { aEspera(); ligacao(); return; }
+      if (!sel || sel.length !== 6) sel = (store.get(kj('v3.sel'), null) || D.estrategias[obj].pecas).slice();
+      tudo(mudouEstrategia);
+    } else if (D) {
+      cabecalho(); motor(); vitais();
+    }
+    obterDrops();
+  } catch(e) {
+    ligado = false;
+  }
+  ligacao();
+}
+const WEB_TXT = {python: 'A carregar o Python no browser (Pyodide). Na primeira vez são cerca de 20 MB; depois ficam em cache.',
+  numpy: 'A carregar o numpy…', motor: 'A carregar o motor do assistente…'};
+function aEspera(){
+  const tr = S && S.motor;
+  if (WEB && webPronto && !JOG) {
+    $('agora').innerHTML = `<div class="agora"><div class="k">${I.alvo}Começar</div><h3>Escolhe o jogador</h3><p class="meta">Procura pelo nome no jogo, aqui em cima. A página só lê o jogo depois de escolheres — e corre no teu browser, com a tua quota da API.</p></div>`;
+    return;
+  }
+  const txt = WEB && !webPronto ? (webTxt === 'erro' ? 'Não foi possível arrancar o motor no browser: ' + webErro : (WEB_TXT[webTxt] || webTxt))
+    : (tr ? 'Motor: ' + tr.estado : 'À espera do servidor') + '. A página actualiza-se sozinha.';
+  $('agora').innerHTML = `<div class="agora"><div class="k">${I.alvo}A preparar</div><h3>A ler o jogo e a fazer o primeiro plano</h3><p class="meta">${esc(txt)}</p></div>`;
+}
+function ligacao(){
+  const el = $('lig');
+  if (WEB && !webPronto) { el.className = 'lig pausa'; el.innerHTML = '<span class="pt"></span><span class="txt">a carregar o motor…</span>'; return; }
+  if (!ligado) { el.className = 'lig mal'; el.innerHTML = `<span class="pt"></span><span class="txt">${WEB ? 'à espera do motor' : 'sem ligação ao servidor local'}</span>`; return; }
+  const pausa = S && S.limitador && S.limitador.pausa_s > 0;
+  const tr = S && S.motor && S.motor.trabalho;
+  el.className = 'lig' + (pausa ? ' pausa' : '');
+  el.innerHTML = `<span class="pt"></span><span class="txt">${pausa ? 'API em pausa ('+n(S.limitador.pausa_s)+' s)' : tr ? 'a calcular' : 'ligado'} · ${S.limitador.tecto ? `${n(S.limitador.ultimo_minuto)}/min · alvo ${n(S.limitador.limite_min)} · máx. ${n(S.limitador.tecto)}` : `${n(S.limitador.ultimo_minuto)}/${n(S.limitador.limite_min)} pedidos/min`}</span>`;
+}
+
+// ---------------------------------------------------------------- cabecalho e vitais
+function estadoTxt(){
+  const tr = S && S.motor && S.motor.trabalho;
+  if (D.semente) return ['velha', 'última estratégia válida · a ler dados novos'];
+  if (tr) return ['calc', '<span class="gira"></span>a recalcular · a anterior continua válida'];
+  if (D.parcial && D.parcial.lidas < D.parcial.escolhidas) return ['prov', `provisória · ${D.parcial.lidas} de ${D.parcial.escolhidas} rondas lidas`];
+  const vel = idade(D.calculado_em);
+  if (vel > 900) return ['velha', 'desactualizada'];
+  return ['', 'actualizada'];
+}
+function painelJogador(){
+  $('jogsel').innerHTML = `<div class="jogsel"><label>${JOG ? 'Outro jogador' : 'Jogador'}<input id="jognome" placeholder="nome no jogo" autocomplete="off"></label>
+    <button class="btn prim" id="jogprocurar">Procurar</button>${JOG || !WEB ? '<button class="btn" id="jogfechar">Fechar</button>' : ''}<div id="jogres" class="pequeno"></div></div>`;
+  $('jognome').focus();
+  $('jognome').onkeydown = e => { if (e.key === 'Enter') procurarJogador(); };
+  $('jogprocurar').onclick = procurarJogador;
+  if ($('jogfechar')) $('jogfechar').onclick = () => { $('jogsel').innerHTML = ''; };
+}
+async function procurarJogador(){
+  const nome = $('jognome').value.trim();
+  if (nome.length < 2) return;
+  $('jogres').textContent = 'a procurar…';
+  try {
+    const L = await obter('/api/jogadores?nome=' + encodeURIComponent(nome));
+    $('jogres').innerHTML = L.length ? L.map(j => `<button class="btn" data-jog="${esc(j.id)}">${esc(j.nome)} · nível ${n(j.nivel)}${j.pais ? ' · ' + esc(j.pais) : ''}</button>`).join('')
+      : 'Nenhum jogador com esse nome.';
+    $('jogres').querySelectorAll('[data-jog]').forEach(b => b.onclick = () => escolherJogador(b.dataset.jog));
+  } catch(e) { $('jogres').textContent = 'Não deu para procurar agora (o jogo não respondeu). Tenta daqui a pouco.'; }
+}
+async function escolherJogador(id){
+  $('jogres').textContent = 'a mudar…';
+  try { await enviar('/api/jogador', {id}); } catch(e) { $('jogres').textContent = 'Não deu para mudar.'; return; }
+  store.set('v3.jogador', id);
+  JOG = id; carregarDoJogador();
+  D = null; versao = -1; versaoRec = -1; anteriores = {};
+  delete CACHE_API['/api/estrategia'];
+  $('jogsel').innerHTML = '';
+  aEspera();
+}
+function cabecalho(){
+  if (!D) return;
+  const [cls, txt] = estadoTxt();
+  const nome = (D.jogador && D.jogador.nome) || '—';
+  const calcS = S && S.motor && S.motor.ultimo_calculo ? S.motor.ultimo_calculo.duracao_s : null;
+  $('cab').innerHTML = `
+    <div class="cab-l1"><span class="etq">${esc(nome)} · nível ${n(D.jogador && D.jogador.nivel)} · <button class="ligj" id="trocarjog">trocar de jogador</button></span><span class="estado ${cls}">${cls===''?'<span class="rd"></span>':''}${txt}</span></div>
+    <h1><em>${esc(nome)}</em>, esta é a tua estratégia de combate.</h1>
+    <div class="horas">
+      <span class="s">${I.rel}Última leitura <b>${hhmmss(D.lido)}</b> <span>(${agoraTxt(idade(D.lido))})</span></span>
+      <span class="s">${I.calc}Último cálculo <b>${hhmmss(D.calculado_em)}</b>${calcS?` <span>em ${n(calcS,1)} s</span>`:''}</span>
+      <span class="s">${I.alvo}${n(D.sim.length)} conjuntos avaliados</span>
+    </div>`;
+  const tj = $('trocarjog'); if (tj) tj.onclick = painelJogador;
+}
+function tick0(){ return D.primeiro_tick_h != null ? D.primeiro_tick_h : 1; }
+function proximaHora(){ const d = new Date(); d.setUTCMinutes(0,0,0); d.setUTCHours(d.getUTCHours()+1); return d; }
+function vitais(){
+  if (!D) return;
+  const E = D.estrategias[obj], v = D.vida, f = D.fome, p = D.pilula || {};
+  const vc = E.vida_comida || v.max * 0.1, vg = E.vida_golpe, vgc = E.vida_golpe_cheio;
+  const B = E.barras || {};
+  const [gar, esp] = golpesCom(v.agora, f.agora, vg, vgc, vc);
+  const [gar2, esp2] = golpesCom(v.agora + v.por_hora, f.agora + f.por_hora, vg, vgc, vc);
+  const prox = proximaHora().toISOString().slice(11,16);
+  const segV = Math.round(v.max / v.por_hora) || 10, segF = Math.round(f.max) || 8;
+  const vPct = Math.min(100, v.agora / v.max * 100), vNext = Math.min(100 - vPct, v.por_hora / v.max * 100);
+  const fPct = Math.min(100, f.agora / f.max * 100), fNext = Math.min(100 - fPct, f.por_hora / f.max * 100);
+  // o tempo que falta conta-se a partir do relogio de agora, nao do da leitura
+  const pilH = p.ate ? (new Date(p.ate).getTime() - Date.now()) / 3600000 : null;
+  const pilTot = p.horas || 8, pilFr = pilH != null ? Math.max(0, Math.min(1, pilH / pilTot)) : 0;
+  // a ressaca: a da API quando existe (debuffEndAt), senao fim do buff + duracao da config
+  const ressacaAte = p.ressaca_ate ? new Date(p.ressaca_ate) : (p.ate && p.ressaca_h ? new Date(new Date(p.ate).getTime() + p.ressaca_h * 3600000) : null);
+  const emRessaca = ressacaAte && ressacaAte > new Date() && !(pilH > 0);
+  const resH = emRessaca ? (ressacaAte - Date.now()) / 3600000 : null;
+  const velha = idade(D.lido) > 600;
+  const C = 2 * Math.PI * 24;
+  $('vitais').innerHTML = `
+    ${velha ? `<div class="aviso" style="grid-column:1 / -1;margin:0">${I.av}<div>Vida, fome e pílula da leitura das <b>${hhmm(D.lido)}</b> (${agoraTxt(idade(D.lido))}). Não são de agora: a próxima leitura actualiza-as.</div></div>` : ''}
+    <div class="vital vida"><div class="t"><span>${I.vida}Vida</span><span>+${n(v.por_hora)} às ${prox}</span></div>
+      <div class="v num" data-k="vida">${n(v.agora,1)} <small>/ ${n(v.max)}</small></div>
+      <div class="barra"><div class="ench" style="width:${vPct}%"></div><div class="fant" style="left:${vPct}%;width:${vNext}%"></div><div class="marcas">${'<i></i>'.repeat(segV)}</div></div>
+      <div class="sub">Às ${prox}: <b>${n(Math.min(v.max, v.agora + v.por_hora),1)}</b>. Um golpe gasta <b>${n(vgc,2)}</b> sem esquiva, <b>${n(vg,2)}</b> em média.</div></div>
+    <div class="vital fome"><div class="t"><span>${I.fome}Fome</span><span>+${n(f.por_hora,1)} às ${prox}</span></div>
+      <div class="v num" data-k="fome">${n(f.agora,1)} <small>/ ${n(f.max)}</small></div>
+      <div class="barra"><div class="ench" style="width:${fPct}%"></div><div class="fant" style="left:${fPct}%;width:${fNext}%"></div><div class="marcas">${'<i></i>'.repeat(segF)}</div></div>
+      <div class="sub">${Math.floor(f.agora+1e-9) >= 1 ? `Dá para comer <b>${Math.floor(f.agora+1e-9)}</b>× ${esc(E.comida||'')} (+${n(vc,0)} vida cada).` : 'Menos de 1: ainda não dá para comer.'} Às ${prox}: <b>${n(Math.min(f.max, f.agora + f.por_hora),1)}</b>.</div></div>
+    <div class="vital"><div class="t"><span>${I.pil}Pílula</span><span>${emRessaca ? '<b style="color:var(--bad)">−'+n(p.ressaca_pct_api != null ? p.ressaca_pct_api : 60)+'% ressaca</b>' : '+'+n(p.ataque_pct)+'%'}</span></div>
+      ${emRessaca ? `<div class="anel"><svg viewBox="0 0 58 58"><circle class="bg" cx="29" cy="29" r="24"/><circle class="fg" style="stroke:var(--bad)" cx="29" cy="29" r="24" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-Math.max(0,Math.min(1,resH/(p.ressaca_h||15.5))))}"/></svg>
+      <div><div class="v num" style="font-size:24px">${hm(resH)}</div><div class="sub" style="margin-top:2px">de ressaca, até às ${ressacaAte.toISOString().slice(11,16)} · o dano é ${n(100 - (p.ressaca_pct_api != null ? p.ressaca_pct_api : 60))}% do normal</div></div></div></div>` : `
+      <div class="anel"><svg viewBox="0 0 58 58"><circle class="bg" cx="29" cy="29" r="24"/><circle class="fg" cx="29" cy="29" r="24" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-pilFr)}"/></svg>
+      <div><div class="v num" style="font-size:24px">${pilH!=null && pilH>0 ? hm(pilH) : 'acabou'}</div><div class="sub" style="margin-top:2px">${pilH!=null && pilH>0 ? `até às ${p.ate_hora} · depois ${n(p.ressaca_h,1)} h de ressaca` : 'sem pílula activa'}</div></div></div></div>`}
+    <div class="vital"><div class="t"><span>${I.raio}Dano do plano</span><span>${B.agora ? 'já' : 'às ' + hhmm(B.inicio)}</span></div>
+      <div class="v num" data-k="danob">${k(E.total.dano)}</div>
+      <div class="sub">${E.passos.length ? `Os golpes que dão lucro${B.agora ? '' : ' das ' + hhmm(B.inicio)}, em ${n(E.passos.length)} ronda${E.passos.length===1?'':'s'} · lucro <b>${sn(E.total.lucro,1)}</b>${E.guardar ? ` · ficam ${n(E.guardar.golpes)} golpes` : ''}` : (E.guardar ? 'Nenhuma ronda aberta dá lucro agora: as barras ficam para depois.' : 'Sem rondas abertas para gastar as barras.')}</div></div>`;
+}
+
+// ---------------------------------------------------------------- agora
+function passosVivos(E){ const t = Date.now(); return E.passos.map(p => ({...p, acabou: new Date(p.fim_iso || 0).getTime() < t})); }
+function fundoTxt(p){
+  if (!p.taxa) return 'sem bounty neste lado';
+  const f = D.fundos && p.batalha ? D.fundos[p.batalha + ':' + p.lado] : null;
+  let t = `${n(p.taxa,3)}/1k · `;
+  if (p.fundo == null) return t + '<span style="color:var(--warn)">sem fundo</span>';
+  if (p.fundo <= 0) return t + '<span style="color:var(--warn)">esgotado</span>';
+  t += `fundo ${n(p.fundo,1)}`;
+  if (f && f.esgota_em_min != null) t += ` · esgota em ~${hm(f.esgota_em_min/60)}`;
+  return t;
+}
+function dropsTxt(p){
+  const o = [];
+  for (const pool of ['ronda','batalha']) {
+    const d = p.drops && p.drops[pool], j = p.ja_drops && p.ja_drops[pool];
+    // V3.3b: a peca que o dano ja feito te garante nao e ganho deste golpe
+    const ja = j && j.nome ? (d && d.nome === j.nome ? ' (já era tua)' : ` (tinhas ${j.nome})`) : '';
+    if (d && d.nome) o.push(`<span class="drop r-${raro(d.nome)}">${d.nome}</span> na ${pool}${ja}`);
+  }
+  return o.join(' · ') || 'sem peça';
+}
+function agora(){
+  const E = D.estrategias[obj], B = E.barras || {};
+  const vivos = passosVivos(E).filter(p => !p.acabou);
+  const p = vivos[0];
+  const vest = D.slots.map(([s]) => D.opcoes[s].findIndex(o => o.origem === 'tens'));
+  const kit = D.slots.map(([s], i) => { const o = D.opcoes[s][E.pecas[i]]; return `<div class="peca-mini r-${raro(o.raridade)}${E.pecas[i]!==vest[i]?' troca':''}" title="${esc(o.codigo)}"><img src="${img(s,o.codigo)}" alt="" loading="lazy"><span class="rr">${esc(o.codigo)}</span></div>`; }).join('');
+  const trocas = E.pecas.filter((x,i)=>x!==vest[i]).length;
+  if (!p) {
+    $('agora').innerHTML = `<div class="agora"><div class="k">${I.alvo}O que fazer agora</div><h3>Nada a fazer agora</h3><p class="meta">${D.titulos && D.titulos.length ? (E.guardar ? 'Nenhuma ronda aberta dá lucro agora: guarda as barras.' : 'As barras não dão dano antes de as rondas lidas acabarem.') : 'Não há rondas abertas lidas.'} O motor volta a ver quando houver dados novos.</p></div>`;
+    return;
+  }
+  const verbo = p.lado === 'attacker' ? 'Ataca' : 'Defende';
+  const quando = B.agora ? 'já' : 'às ' + hhmm(B.inicio);
+  $('agora').innerHTML = `<div class="agora">
+    <div class="k">${I.alvo}O que fazer agora · ${quando}</div>
+    <h3>${verbo} do lado de <span class="lado">${esc(p.pais)}</span><br>em ${esc(p.t.replace(' / ',' × '))}</h3>
+    <div class="meta">Ronda acaba às <b>${p.fim_hora}</b> · bónus ×${n(p.fator,2)} · <span class="chip"><img src="${IMG}${p.municao}.png" alt="">${esc(p.municao)}</span> <span class="chip"><img src="${IMG}${p.comida}.png" alt="">${esc(p.comida)}</span></div>
+    <div class="agora-grid">
+      <div class="grande num" data-k="ag-d">${k(p.dano)}<small>${p.ja ? `a mais nesta ronda (já fizeste ${k(p.ja)}${p.ja_rank ? ', #'+n(p.ja_rank) : ''}; ficas com ${k(p.total_ronda)})` : 'de dano nesta ronda'}${vivos.length > 2 ? ` · depois as outras ${n(vivos.length-1)} rondas (${k(E.total.dano)} no total)` : vivos.length === 2 ? ` · depois a outra ronda (${k(E.total.dano)} no total)` : ' · é a única ronda do plano'}${E.guardar ? ` · ficam ${n(E.guardar.golpes)} golpes para depois` : ''}</small></div>
+      <div class="kpis">
+        <div class="kpi"><span>Drops</span><b style="font-size:16px">${dropsTxt(p)}</b></div>
+        <div class="kpi"><span>Bounty bruto${p.contrato ? ' + contrato' : ''}</span><b>${p.bounty?n(p.bounty,2):'0'}${p.contrato ? ' + ' + n(p.contrato,2) : ''}</b></div>
+        <div class="kpi"><span>Custos</span><b>${n(p.custo,2)}</b></div>
+        <div class="kpi forte"><span>Lucro líquido · ${n(p.lucro_1k,2)}/1k</span><b data-k="ag-l">${sn(p.lucro,1)}</b></div>
+      </div>
+    </div>
+    <div class="kit">${kit}<span class="nota">${trocas ? `Equipamento recomendado: ${trocas} troca${trocas>1?'s':''} face ao que tens vestido (ponto laranja).` : 'Equipamento: o que já tens vestido.'} <a href="#equipamento">Ver porquê</a></span></div>
+  </div>`;
+}
+
+// ---------------------------------------------------------------- plano
+function mudancaPasso(t){ const m = D.mudancas && D.mudancas.estrategia && D.mudancas.estrategia[obj]; return m ? m.passos.find(p => p.t === t) : null; }
+function linhaPasso(p, i){
+  const mp = mudancaPasso(p.t);
+  let badge = '';
+  if (mp && mp.tipo === 'entrou') badge = '<span class="badge novo">novo</span>';
+  else if (mp && mp.tipo === 'mudou') badge = `<span class="badge mudou">${mp.campos.includes('golpes') && mp.antes.dano != null ? k(mp.antes.dano)+' → '+k(mp.agora.dano) : 'mudou'}</span>`;
+  const verbo = p.lado === 'attacker' ? 'Ataca' : 'Defende';
+  return `<div class="passo${p.acabou?' acabou':''}${badge?' tem-mud':''}">
+    <span class="ix">${String(i+1).padStart(2,'0')}</span>
+    <div><h4>${verbo} <span class="lado">${esc(p.pais)}</span> · ${esc(p.t.replace(' / ',' × '))}${badge}</h4>
+      <div class="sm">${p.acabou?'a ronda já acabou':'até às '+p.fim_hora} · ×${n(p.fator,2)}${ordensChip(p.ordens)} · ${esc(p.municao)} · ranking lido ${hhmm(p.ronda_lida_em)}${p.janela?' · '+janChip(p.janela):''}</div>
+      <div class="ja">${jaTxt(p)}</div></div>
+    <div class="g">${k(p.dano)}<small>${p.ja ? 'a mais' : 'de dano'}</small></div>
+    <div class="c">${dropsTxt(p)}<span>no pior cenário</span></div>
+    <div class="c">${p.bounty?n(p.bounty,2):'0'}<span>${fundoTxt(p)}${p.contrato ? ` · contrato +${n(p.contrato,2)} (medido)` : ''}</span></div>
+    <div class="c">${n(p.custo,2)}<span>custos</span></div>
+    <div class="lu"><b>${sn(p.lucro,1)}</b><span>${n(p.lucro_1k,2)}/1k</span></div>
+  </div>`;
+}
+function ordensChip(o){ return (o || []).map(x => ` <span class="tag ok">${x === 'ordem_pais' ? 'ordem do país' : 'ordem da MU'}</span>`).join(''); }
+function fimBarra(v, max, ph, B){
+  // a hora certa em que a barra enche, se nao gastares mais depois do plano (a recuperacao cai as horas certas)
+  if (v == null || !max || !ph) return null;
+  const horas = Math.ceil((max - v) / ph - 1e-9);
+  if (horas <= 0) return 'já está cheia';
+  let t = proximaHora();
+  if (B && !B.agora && B.inicio) { t = new Date(B.inicio); t.setUTCMinutes(0,0,0); t.setUTCHours(t.getUTCHours() + 1); }
+  t.setUTCHours(t.getUTCHours() + horas - 1); return 'às ' + t.toISOString().slice(11,16);
+}
+function jaTxt(p){
+  if (!p.ja) return 'Ainda não bateste nesta ronda: o plano conta do zero.';
+  return `Já fizeste <b>${k(p.ja)}</b> nesta ronda${p.ja_rank ? ' (#'+n(p.ja_rank)+')' : ''} · com o plano ficas com <b>${k(p.total_ronda)}</b>${p.ja_batalha ? ' · na batalha já tens '+k(p.ja_batalha) : ''}`;
+}
+function janChip(j){ return `<span class="jan j-${esc(j.nome)}">${esc(j.nome)} ×${n(j.mult,1)}</span>`; }
+function linhaJanelas(){
+  const J = D.janelas || [];
+  if (!J.length) return '';
+  return `<div class="linha-j">${J.map((j,i) => `<div class="j-${esc(j.nome)}"><b>${esc(j.nome)} ×${n(j.mult,1)}</b>${i===0?'agora':'das '+j.inicio_hora}${j.fim_hora?' até às '+j.fim_hora:' em diante'}</div>`).join('')}</div>`;
+}
+function pilulaTexto(){
+  const p = D.pilula || {}, agoraMs = Date.now();
+  const fimBuff = p.ate ? new Date(p.ate).getTime() : null;
+  const fimRes = p.ressaca_ate ? new Date(p.ressaca_ate).getTime() : (fimBuff && p.ressaca_h ? fimBuff + p.ressaca_h*3600000 : null);
+  const pct = p.ressaca_pct_api != null && p.ressaca_pct_api > 0 ? p.ressaca_pct_api : 60;
+  if (fimBuff && fimBuff > agoraMs) return `Faz tudo até às <b>${p.ate_hora}</b>. Depois vêm ${n(p.ressaca_h,1)} h de ressaca com −${n(pct)}% de ataque (confirmado na API a 20/11).`;
+  if (fimRes && fimRes > agoraMs) return `Estás em <b>ressaca até às ${new Date(fimRes).toISOString().slice(11,16)}</b>: o dano por golpe é ${n(100-pct)}% do normal. Quando acabar, o dano por golpe sobe ${n(100/(100-pct),1)}× e o motor recalcula sozinho nessa altura.`;
+  return 'Sem pílula nem ressaca: o dano por golpe é o normal.';
+}
+function veredictoEN(A, V){
+  // o mesmo juizo do servidor (servidor._veredicto), escrito em ingles a partir dos numeros
+  const ja = A[0], outras = A.slice(1).filter(a => a.lucro_1k != null);
+  const nome = j => ({'pílula': 'pill', 'ressaca': 'hangover', 'normal': 'normal'}[j.nome] || j.nome);
+  if (!outras.length) return {texto: 'There is no other pill window before the rounds end.', aviso: null};
+  const b = outras.reduce((m, a) => a.lucro_1k > m.lucro_1k ? a : m), q = `at ${b.janela.inicio_hora} (${nome(b.janela)}, ×${n(b.janela.mult,1)})`;
+  if (V.compensa_esperar) return {texto: `Spending the same bars ${q} pays off by profit per 1k: ${n(b.lucro_1k,2)}/1k and ${sn(b.lucro,1)} (${k(b.dano)} damage), against ` +
+      (ja.lucro_1k != null ? `${n(ja.lucro_1k,2)}/1k and ${sn(ja.lucro,1)} now.` : 'nothing now.'),
+    aviso: V.aviso ? `More per 1k, but less total profit: ${sn(b.lucro,2)} ${q} against ${sn(ja.lucro,2)} if you spend now. Difference: ${sn(ja.lucro - b.lucro,2)}.` : null};
+  const mais = outras.reduce((m, a) => a.lucro > m.lucro ? a : m);
+  return {texto: `Waiting doesn't pay: ${q} the same bars would give ${n(b.lucro_1k,2)}/1k and ${sn(b.lucro,1)}; now they give ${n(ja.lucro_1k,2)}/1k and ${sn(ja.lucro,1)}.`,
+    aviso: V.aviso ? `Waiting until ${mais.janela.inicio_hora} (${nome(mais.janela)}) would give more total profit (${sn(mais.lucro,2)} against ${sn(ja.lucro,2)}), but less per 1k (${n(mais.lucro_1k,2)} against ${n(ja.lucro_1k,2)}).` : null};
+}
+function ticks(h){ const t0 = tick0(); return (h == null || h < t0) ? 0 : 1 + Math.floor(h - t0 + 1e-9); }
+function plano(){
+  const E = D.estrategias[obj], B = E.barras || {}, G = D.barras || {};
+  const P = passosVivos(E);
+  const quando = B.agora ? 'já' : 'às ' + hhmm(B.inicio);
+  const progresso = Object.entries(D.rondas || {}).map(([t,r]) => {
+    const p = E.passos.find(x => x.t === t);
+    const idadeLeitura = Math.max(0, (Date.now() - new Date(r.lido_em).getTime()) / 1000);
+    const restante = (r.fim_s || 0) - idadeLeitura;
+    const ronda = r.teu_dano_ronda;
+    const batalha = r.dano_jogador_batalha;
+    const danoRonda = ronda ? `${k(ronda.dano)} de dano \u00b7 posição #${n(ronda.rank)}` : 'Ainda não constas no ranking lido';
+    const danoBatalha = batalha && batalha.tem_registo
+      ? `${k(batalha.dano)} de dano \u00b7 bounty ${n(batalha.bounty,2)}${batalha.contrato ? ' \u00b7 contrato ' + n(batalha.contrato,2) : ''}${batalha.atualizado_em ? ' \u00b7 resumo '+hhmm(batalha.atualizado_em) : ''}`
+      : 'Sem resumo actual da batalha';
+    let decisao;
+    if (restante <= 0) decisao = '<span class="tag ind">Ronda terminada</span>';
+    else if (p) decisao = `<span class="tag ok">No plano</span> ${k(p.dano)} de dano \u00b7 lucro ${sn(p.lucro,1)} \u00b7 ${n(p.lucro_1k,2)}/1k`;
+    else if ((G.fora || []).includes(t)) decisao = '<span class="tag ind">Acaba antes</span> fecha antes de haver vida para bater';
+    else decisao = '<span class="tag nao">Fora do plano</span> as barras rendem mais nas outras rondas';
+    return `<tr><td>${esc(t.replace(' / ',' \u00d7 '))} \u00b7 r${n(r.numero)}</td><td>${danoRonda}</td><td>${danoBatalha}<small>Leitura ${hhmm(r.dano_jogador_lido_em || r.lido_em)}</small></td><td>${decisao}</td></tr>`;
+  }).join('');
+  const sairam = (D.mudancas && D.mudancas.estrategia && D.mudancas.estrategia[obj] ? D.mudancas.estrategia[obj].passos : []).filter(p => p.tipo === 'saiu');
+  let i = 0, h = `<div class="sec-cab"><span class="n">02</span><h2>O plano: bate onde dá lucro, guarda o resto</h2><p>Com a vida (${n(B.vida,1)}) e a fome (${n(B.fome,1)}) ${B.agora ? 'de agora' : 'das ' + hhmm(B.inicio)}, os golpes vão para as rondas abertas da forma que dá mais lucro no pior cenário, e só até onde o lucro sobe: o que não dá lucro agora fica nas barras para outras oportunidades. Conta com o dano que já fizeste: o teu lugar no ranking é o do total. Pela ordem a que as rondas acabam. O lucro conta só o que o dano novo acrescenta: a peça que o dano já feito te garante não entra.${D.torneios_fora ? ` As ${n(D.torneios_fora)} batalhas de torneio ficam fora: o teu MU não está em nenhuma equipa e não está verificado que se possa bater lá (estão na aba Drops).` : ''}</p></div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:6px"><span class="etq">Objectivo</span><div class="seg" role="group">${Object.entries(OBJ).map(([id,o])=>`<button data-obj="${id}" aria-pressed="${id===obj}">${o.rot}${id==='regra'?' · predefinido':''}</button>`).join('')}</div></div>
+    <p class="pequeno" style="margin-top:4px">${OBJ[obj].nota} O objectivo escolhe o equipamento; com ele, bate-se até onde o lucro sobe.</p>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:14px 0 6px"><span class="etq">Comida</span><div class="seg" role="group">
+      <button data-com="" aria-pressed="${!COMIDA}">Automático${!COMIDA && E.comida ? ' · ' + esc(E.comida) : ''}</button>
+      ${(E.por_comida || []).map(c => `<button data-com="${esc(c.comida)}" aria-pressed="${COMIDA === c.comida}"><img src="${IMG}${esc(c.comida)}.png" alt="" style="width:16px;height:16px;vertical-align:-3px;margin-right:5px">${esc(c.comida)}</button>`).join('')}</div></div>
+    ${(E.por_comida || []).length ? `<div class="rolar" style="margin-top:6px"><table class="tab"><tr><th>Comida</th><th>Golpes por ponto de fome</th><th>Dano no plano</th><th>Lucro no plano</th><th>Ficam para depois</th></tr>${E.por_comida.map(c => `<tr class="${c.escolhida?'esc':''}"><td><img src="${IMG}${esc(c.comida)}.png" alt="" style="width:16px;height:16px;vertical-align:-3px;margin-right:5px">${esc(c.comida)}${c.escolhida?' <span class="tag ok">o plano</span>':''}</td><td>${n(c.golpes_por_fome,1)}</td><td>${k(c.dano)}</td><td>${sn(c.lucro,1)} · ${n(c.lucro_1k,2)}/1k</td><td>${c.ficam ? `<b>${n(c.ficam)} golpes</b> · fome ${n(c.sobra.fome,1)}` : 'nada'}</td></tr>`).join('')}</table></div>
+    <p class="pequeno" style="margin-top:4px">Cada comida repõe uma parte diferente da vida: a que dá mais golpes por ponto de fome deixa mais golpes para depois. «Automático» escolhe a de mais lucro agora e não põe preço nos golpes que ficam — esses contam-se em golpes.</p>` : ''}
+    ${ordensLinha(E)}
+    <div class="resumo-b"><span>Dano total <b data-k="pl-d">${k(E.total.dano)}</b></span><span class="l">Lucro <b data-k="pl-l">${sn(E.total.lucro,1)}</b></span><span>Por 1k <b>${n(E.total.lucro_1k,2)}</b></span><span>Comida: ${esc(E.comida || '—')} · ${quando}</span></div>`;
+  h += `<div class="fase"><b>${B.agora ? 'Agora' : 'Às ' + hhmm(B.inicio)}</b><span>${P.length ? (B.agora ? 'gasta as barras já, ronda a ronda' : 'as barras estão vazias: isto é com a vida e a fome que recuperas a essa hora') : 'nada para fazer'}</span></div>` + (P.map(p => linhaPasso(p, i++)).join('') || '');
+  h += sairam.map(p => `<div class="saiu">Saiu do plano no último cálculo: <b>${esc(p.t.replace(' / ',' × '))}</b>.</div>`).join('');
+  const A = E.alternativas || [], V = E.espera;
+  if (A.length) {
+    const linhas = A.map(a => `<tr class="${a.escolhida?'esc':''}"><td>${a.janela.indice===0 ? 'já' : 'às '+esc(a.janela.inicio_hora)} · ${janChip(a.janela)}${a.escolhida?' <span class="tag ok">o plano</span>':''}</td><td>${k(a.dano)}</td><td>${sn(a.lucro,1)}</td><td>${n(a.lucro_1k,2)}</td><td>${n(a.rondas)}${a.fundo_estimado?' <span class="tag est">fundo estimado</span>':''}</td></tr>`).join('');
+    h += `<div class="fase"><b>Janelas da pílula</b><span>as mesmas barras gastas a outra hora (sem contar o que recuperas até lá)</span></div>${linhaJanelas()}
+      ${A.length > 1 ? `<div class="rolar" style="margin-top:10px"><table class="tab"><tr><th>Quando</th><th>Dano</th><th>Lucro</th><th>Por 1k</th><th>Rondas abertas</th></tr>${linhas}</table></div>` : ''}
+      ${V ? `<p class="pequeno" style="margin:8px 0 0${V.compensa_esperar?';color:var(--ac)':''}">${esc(LINGUA === 'en' ? veredictoEN(A, V).texto : V.texto)}${V.aviso ? `<span class="aviso-j">⚠ ${esc(LINGUA === 'en' ? veredictoEN(A, V).aviso : V.aviso)}</span>` : ''}</p>` : ''}`;
+  }
+  h += `<div class="fase"><b>Mais tarde</b><span>pílula, o resto das barras e a próxima hora</span></div><div class="depois">
+    <div class="nota-b"><span class="t">Pílula</span>${pilulaTexto()}</div>
+    <div class="nota-b"><span class="t">Fica para depois</span>${guardarTxt(E)}</div>
+    ${contratoTxt()}
+    <div class="nota-b"><span class="t">A próxima hora</span>Às ${proximaHora().toISOString().slice(11,16)} a vida volta <b>+${n(D.vida.por_hora)}</b> e a fome <b>+${n(D.fome.por_hora,1)}</b>. O plano refaz-se sozinho com o que houver nessa altura.</div>
+  </div>`;
+  h += `<h3 style="font-family:var(--f-d);font-size:18px;margin:28px 0 8px">Dano já feito e decisão por batalha</h3>
+    <div class="rolar"><table class="tab"><tr><th>Batalha / ronda</th><th>O teu dano nesta ronda</th><th>O teu dano na batalha</th><th>No plano</th></tr>${progresso}</table></div>
+    <p class="pequeno">A posição e o dano da ronda vêm do ranking merged. O acumulado vem do resumo oficial da batalha. O dano do plano é a mais, com os cortes de agora, o bounty disponível e o objectivo escolhido.</p>`;
+  $('plano').innerHTML = h;
+  $('plano').querySelectorAll('[data-obj]').forEach(b => b.onclick = () => { obj = b.dataset.obj; store.set('v3.obj', obj); tudo(false); });
+  $('plano').querySelectorAll('[data-com]').forEach(b => b.onclick = async () => {
+    COMIDA = b.dataset.com || null; store.set(kj('v3.comida'), COMIDA); plano();
+    try { await enviar('/api/comida', {comida: COMIDA}); } catch(e) {}
+  });
+  $('plano').querySelectorAll('[data-ord]').forEach(b => b.onclick = async () => {
+    ORDENS = Number(b.dataset.ord); store.set(kj('v3.ordens'), ORDENS); plano();
+    try { await enviar('/api/ordens', {tolerancia: ORDENS}); } catch(e) {}
+  });
+}
+function contratoTxt(){
+  // V3.3c: o contrato de mercenario da tua MU, medido no teu resumo da batalha
+  const cs = Object.entries(D.rondas || {}).filter(([t, r]) => r.contrato);
+  if (!cs.length) return '';
+  const linhas = cs.map(([t, r]) => { const c = r.contrato;
+    return `<b>${esc(t.replace(' / ',' × '))}</b>: recebeste ${n(c.pago,2)} de contrato por ${k(c.dano)} de dano entre as ${hhmm(c.desde)} e as ${hhmm(c.ate)} — <b>${n(c.por_1k,3)}/1k</b>`
+      + (!c.ativo ? ' · nesse intervalo já não pagou: o plano não o conta' : c.aplicado ? ` · conta-se no ${esc(c.porque)}` : ` · não se conta: ${esc(c.porque)}`); }).join('<br>');
+  return `<div class="nota-b"><span class="t">Contrato da MU (medido)</span>${linhas}<br><span class="pequeno">A taxa é a que recebeste entre duas leituras do teu resumo da batalha, não a do contrato (os contratos ganhos não são públicos). Se o contrato começou a meio do intervalo, a taxa real é maior. Sem tecto: o orçamento do contrato não se vê.</span></div>`;
+}
+function guardarTxt(E){
+  const G = E.guardar;
+  if (!G) return 'Nada: com esta comida, todos os golpes das barras dão lucro agora.';
+  const B = E.barras || {};
+  const vida = fimBarra(G.vida, D.vida.max, D.vida.por_hora, B), fome = fimBarra(G.fome, D.fome.max, D.fome.por_hora, B);
+  return `Ficam <b>${n(G.golpes)} golpes</b> nas barras (vida ${n(G.vida,1)}, fome ${n(G.fome,1)}${G.come ? ` · comes ${n(G.come)}× ${esc(E.comida)}` : ' · sem comer'}).`
+    + (G.tudo ? ` Se os gastasses também, davam mais <b>${k(G.resto_dano)}</b> de dano e <b>${sn(G.resto_lucro,1)}</b> de lucro.` : '')
+    + (vida || fome ? ` Se não bateres mais, a vida enche ${vida || '—'} e a fome ${fome || '—'}: o que recuperares a partir daí perde-se.` : '');
+}
+function ordensLinha(E){
+  const O = E.ordens; if (!O) return '';
+  const tol = ORDENS != null ? ORDENS : O.tolerancia;
+  const pct = x => n(x * 100) + '%';
+  const botoes = (O.opcoes || [0, 0.05, 0.1, 0.2]).map(x => `<button data-ord="${x}" aria-pressed="${Math.abs(x - tol) < 1e-9}">${x ? 'até ' + pct(x) + ' do lucro' : 'sem preferência'}</button>`).join('');
+  let txt;
+  if (!O.ha) txt = 'Nenhuma das rondas abertas tem ordem do teu país ou da tua MU.';
+  else if (O.aplicada) txt = `Com a preferência: <b>${k(O.dano_ordem)}</b> de dano onde há ordem tua (sem ela: ${k(O.dano_ordem_sem)}), por <b>${sn(-O.perda,1)}</b> de lucro (${sn(O.lucro_sem,1)} sem a preferência). Os mesmos golpes; uma ronda de grande valor sem ordem só se larga se a perda couber no limite.`;
+  else if (!O.tolerancia) txt = `Sem preferência: o plano é só o de mais lucro (${k(O.dano_ordem)} de dano onde há ordem tua).`;
+  else txt = `Pôr mais dano onde há ordem custava mais de ${pct(O.tolerancia)} do lucro: fica o plano de mais lucro (${k(O.dano_ordem)} de dano onde há ordem tua).`;
+  return `<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:14px 0 6px"><span class="etq">Ordens</span><div class="seg" role="group">${botoes}</div></div>
+    <p class="pequeno" style="margin-top:4px">${txt} O bónus das ordens (+20% cada, prioridade alta) já está no dano de cada golpe; isto é a tua preferência por onde bater.</p>`;
+}
+
+// ---------------------------------------------------------------- equipamento
+function equipamento(){
+  const E = D.estrategias[obj];
+  const vest = D.slots.map(([s]) => D.opcoes[s].findIndex(o => o.origem === 'tens'));
+  const slot = (s, i, o, rot) => {
+    const r = raro(o.raridade);
+    let dur = '';
+    if (o.origem !== 'comprar') {
+      const f = s === 'weapon' ? 1 : (1 - (E.esquiva||0)/100);
+      const g = o.estado != null ? Math.max(0, Math.floor((o.estado - 1) / f)) : null;
+      dur = `<div class="mini-barra${o.estado<20?' baixa':''}"><i style="width:${o.estado||0}%"></i></div><div class="dd">${n(o.estado)}% de durabilidade</div>`;
+    } else dur = `<div class="mini-barra"><i style="width:100%"></i></div><div class="dd">nova · roll médio</div>`;
+    const q = o.origem === 'tens' && D.vestido[s] ? D.vestido[s].qualidade : null;
+    const org = o.origem === 'tens' ? 'vestida' : o.origem === 'manual' ? 'introduzida à mão' : 'comprar ≈ ' + n(o.capex,1);
+    return `<div class="slot r-${r}"><div class="img"><img src="${img(s,o.codigo)}" alt="" loading="lazy"></div>
+      <div class="sn">${esc(rot)}</div><div class="cd">${esc(o.codigo)}</div><div class="ra">${RN[r]||r}${q!=null?' · roll '+n(q*100)+'%':''}</div>
+      <span class="org${o.origem==='comprar'?' compra':o.origem==='manual'?' manual':''}">${org}</span>${dur}</div>`;
+  };
+  const tiles = D.slots.map(([s, rot], i) => slot(s, i, D.opcoes[s][E.pecas[i]], rot)).join('');
+  const trocas = [], armadilha = [];
+  D.slots.forEach(([s, rot], i) => {
+    if (E.pecas[i] === vest[i]) return;
+    const o = D.opcoes[s][E.pecas[i]], v = D.opcoes[s][vest[i]];
+    trocas.push(`<li><span style="min-width:74px;color:var(--ink3)">${esc(rot)}</span><b class="r-${raro(v.raridade)}" style="color:var(--c)">${esc(v.codigo)}</b><span class="seta">→</span><b class="r-${raro(o.raridade)}" style="color:var(--c)">${esc(o.codigo)}</b><span style="margin-left:auto">${o.origem==='comprar'?'≈ '+n(o.capex,1)+' <span class="tag est">estimativa</span>':'já é tua'}</span></li>`);
+    const q = D.vestido[s] && D.vestido[s].qualidade;
+    if (o.codigo === v.codigo && o.origem === 'comprar' && q != null && q > 0.5)
+      armadilha.push(`${rot.toLowerCase()} (a tua ${esc(v.codigo)} tem roll ${n(q*100)}%; a do mercado conta com o roll médio)`);
+  });
+  const sem = D.estrategias.sem;
+  $('equipamento').innerHTML = `<div class="sec-cab"><span class="n">03</span><h2>Equipamento</h2><p>O conjunto vencedor entre ${n(D.sim.length)} combinações de seis peças Epic, Legendary e Mythic — as tuas, as introduzidas à mão e as do mercado. A simulação nunca mexe na tua conta.</p></div>
+    <div class="loadout">${tiles}</div>
+    ${trocas.length ? `<ul class="trocas">${trocas.join('')}</ul><p class="pequeno">Investimento: <b>${n(E.capex,1)}</b>. O preço de compra não entra no lucro: ficas com a peça, e o custo de a usar (o desgaste) já está em cada golpe. Sem livro de ordens de equipamento, não há valor de revenda.</p>` : '<p class="pequeno">É o que tens vestido. Não precisas de mudar nada.</p>'}
+    ${armadilha.length ? `<div class="aviso">${I.av}<div><b>Atenção:</b> esta escolha troca peças tuas por outras do mesmo modelo com um roll pior: ${armadilha.join('; ')}. Fazem menos dano e o drop é o mesmo, por isso o lucro por 1k sobe — mas o lucro total pode descer. Compara com «Lucro total» e «Sem compras».</div></div>` : ''}
+    ${obj !== 'sem' ? `<p class="pequeno">Sem comprar nada: ${sn(sem.total.lucro,1)} a ${n(sem.total.lucro_1k,2)}/1k. Com este conjunto: ${sn(E.total.lucro,1)} a ${n(E.total.lucro_1k,2)}/1k (${sn(E.total.lucro - sem.total.lucro,1)} de lucro, ${sn(E.total.lucro_1k - sem.total.lucro_1k,2)}/1k).</p>` : ''}
+    ${compras()}`;
+}
+function compras(){
+  const C = D.compras;
+  if (!C || !C.trocas || !C.trocas.length) return `<div class="caixa" style="margin-top:20px"><b>Compras sugeridas</b><br>${D.semente?'Aparecem depois do primeiro cálculo com dados de agora.':'Sem dados para comparar.'}</div>`;
+  const linhas = C.trocas.slice(0, 12).map(t => `<tr>
+    <td><span class="r-${raro(t.raridade)}" style="color:var(--c);font-weight:600">${esc(t.entra)}</span> <span style="color:var(--ink3)">em vez de ${esc(t.sai)}</span></td>
+    <td>${n(t.preco,1)} <span class="tag est">${t.fonte_preco && t.fonte_preco.indexOf('estimativa')>=0?'estimativa':'?'}</span></td>
+    <td>${n(t.desgaste_golpe,3)}</td><td>${n(t.desgaste_plano,2)} <span style="color:var(--ink3)">(${n(t.durabilidade_plano_pct,1)}%)</span></td>
+    <td>${sn(t.lucro_actual,1)} → ${sn(t.lucro_novo,1)}</td><td class="${t.dif_lucro>=0?'pos':'neg'}">${sn(t.dif_lucro,2)}</td>
+    <td class="${t.dif_r1k>=0?'pos':'neg'}">${sn(t.dif_r1k,2)}</td>
+    <td>${Math.abs(t.dif_r1k) < 0.005 ? '<span class="tag est">igual</span>' : t.dif_r1k > 0 ? '<span class="tag ok">compensa</span>' : '<span class="tag nao">não compensa</span>'}</td></tr>`).join('');
+  return `<h3 style="font-family:var(--f-d);font-size:18px;margin:30px 0 4px">Compras sugeridas — uma peça de cada vez</h3>
+    <p class="pequeno" style="margin:0 0 10px">Partindo do que tens vestido (${sn(C.base.lucro,1)} a ${n(C.base.r1k,2)}/1k). «Compensa» quer dizer que sobe o lucro por 1k. O preço é a média de vendas do código (gameStat), sem roll. ${esc(C.revenda)}.</p>
+    <div class="rolar"><table class="tab"><tr><th>Peça</th><th>Preço</th><th>Desgaste/golpe</th><th>Desgaste no plano</th><th>Lucro actual → novo</th><th>Δ lucro</th><th>Δ por 1k</th><th></th></tr>${linhas}</table></div>`;
+}
+
+// ---------------------------------------------------------------- resultado
+function resultado(){
+  const E = D.estrategias[obj], t = E.total, P = E.passos;
+  const s = f => P.reduce((a,p)=>a+(p[f]||0),0);
+  const rec = s('itens') + s('cases') + s('bounty');
+  const conta = {}; P.forEach(p => ['ronda','batalha'].forEach(x => { const d = p.drops && p.drops[x]; if (d && d.nome) conta[d.nome] = (conta[d.nome]||0)+1; }));
+  $('resultado').innerHTML = `<div class="sec-cab"><span class="n">04</span><h2>Resultado económico</h2><p>Tudo no pior de três cenários de concorrência, salvo onde diz «esperado». Nada disto é garantido: depende do dano que os outros ainda vão fazer.</p></div>
+    <div class="res">
+      <div><span>Receita bruta</span><b class="num">${n(rec,1)}</b><small>peças, cases e bounty</small></div>
+      <div><span>Custos</span><b class="num">${n(s('custo'),1)}</b><small>munição, comida, desgaste</small></div>
+      <div class="l${t.lucro<0?' neg':''}"><span>Lucro líquido</span><b class="num" data-k="res-l">${sn(t.lucro,1)}</b><small>esperado ${sn(t.esperado,1)}</small></div>
+      <div class="l"><span>Lucro por 1k de dano</span><b class="num" data-k="res-r">${n(t.lucro_1k,2)}</b><small>${k(t.dano)} de dano · as barras todas</small></div>
+    </div>
+    ${t.lucro < 0 ? `<div class="aviso">${I.av}<div><b>Esta estratégia não é rentável</b> com os dados de agora.</div></div>` : ''}
+    <div class="decomp">
+      <div><h4>Receita</h4>
+        <div class="lin"><span>Peças do ranking: ${Object.entries(conta).map(([k2,v])=>`${v}× <span class="drop r-${raro(k2)}">${k2}</span>`).join(', ')||'nenhuma'}</span><b>${n(s('itens'),2)}</b></div>
+        <div class="lin"><span>Cases (o teu histórico: ${n(D.receitas && D.receitas.cases_por_golpe,3)}/golpe)</span><b>${n(s('cases'),2)}</b></div>
+        <div class="lin"><span>Bounty bruto</span><b>${n(s('bounty'),2)}</b></div>
+        <div class="lin"><span>Toolbox, woodenCase, dinheiro de drop</span><b style="color:var(--ink3)">sem valor provado</b></div>
+        <div class="lin tot"><span>Receita bruta</span><b>${n(rec,2)}</b></div></div>
+      <div><h4>Custos</h4>
+        <div class="lin"><span>Munição</span><b>${n(s('c_mun'),2)}</b></div>
+        <div class="lin"><span>Comida</span><b>${n(s('c_comida'),2)}</b></div>
+        <div class="lin"><span>Desgaste das peças</span><b>${n(s('c_desgaste'),2)}</b></div>
+        <div class="lin"><span>Pílula</span><b style="color:var(--ink3)">já tomada</b></div>
+        <div class="lin tot"><span>Custos</span><b>${n(s('custo'),2)}</b></div></div>
+    </div>
+    <p class="pequeno">Investimento adicional (compras): <b>${n(E.capex,1)}</b>, fora do lucro. As peças do ranking valem pela média de vendas do código (estimativa, sem roll); as cases pelo livro de ordens.</p>`;
+}
+
+// ---------------------------------------------------------------- comparar e simular
+const RAR_IDX = () => D.slots.map(([s]) => D.opcoes[s].map(o => raro(o.raridade)));
+let SIM = {};
+function indexar(){ SIM = {}; D.sim.forEach(r => SIM[r.k] = r); }
+const rarDe = k2 => { const R = RAR_IDX(); return [...new Set(k2.split(',').map((c,i)=>R[i][+c]))].sort(); };
+function melhorDe(f){ let m=null, km=null; const ch=chaveObj[obj]; for (const r of D.sim){ if(!f(r)) continue; const kk=ch(r); if(!m||maior(kk,km)){m=r;km=kk;} } return m; }
+function familias(){
+  const vestK = D.slots.map(([s]) => D.opcoes[s].findIndex(o => o.origem === 'tens')).join(',');
+  const grupos = [['O que tens vestido', r => r.k===vestK], ['Só Epic', r => rarDe(r.k).join()==='epic'], ['Só Legendary', r => rarDe(r.k).join()==='legendary'],
+    ['Só Mythic', r => rarDe(r.k).join()==='mythic'], ['Híbrida', r => rarDe(r.k).length>1], ['Máximo dano', null]];
+  return grupos.map(([nome,f]) => ({nome, r: f ? melhorDe(f) : D.sim.reduce((m,x)=> (!m||x.m>m.m||(x.m===m.m&&maior(chaveObj[obj](x),chaveObj[obj](m))))?x:m, null)}));
+}
+function comparar(){
+  indexar();
+  const L = familias(), ch = chaveObj[obj];
+  let venc = null; L.forEach(l => { if (l.r && (!venc || maior(ch(l.r), ch(venc.r)))) venc = l; });
+  const pts = r => r.k.split(',').map((c,i)=>{ const o = D.opcoes[D.slots[i][0]][+c]; return `<span class="r-${raro(o.raridade)}" style="color:var(--c);font-family:var(--f-m);font-size:11.5px">${esc(o.codigo)}${o.origem!=='comprar'?'*':''}</span>`; }).join(' ');
+  const met = [['Dano com as barras', r=>k(r.d)], ['Dano por golpe', r=>n(r.d/r.g)], ['Custo por golpe', r=>n(r.u/r.g,2)], ['Bounty bruto', r=>n(r.b,2)],
+    ['Receita bruta', r=>n(r.i+r.x+r.b,2)], ['Custos', r=>n(r.u,2)], ['Lucro líquido', r=>sn(r.l,1)], ['Lucro por 1k', r=>n(r.r,2)], ['Investimento', r=>r.c?n(r.c,1):'0']];
+  const cab = L.map(l => `<th style="text-align:right;${l===venc?'color:var(--ac)':''}">${l.nome}${l===venc?'<br><span class="tag ok">melhor</span>':''}</th>`).join('');
+  const rows = met.map(([nm, f]) => `<tr><td>${nm}</td>${L.map(l => `<td style="${l===venc?'background:var(--acf);':''}${nm.startsWith('Lucro')?'font-weight:600':''}">${l.r?f(l.r):'—'}</td>`).join('')}</tr>`).join('');
+  const conj = `<tr><td>Peças</td>${L.map(l=>`<td style="white-space:normal;min-width:150px;${l===venc?'background:var(--acf);':''}">${l.r?pts(l.r):'—'}</td>`).join('')}</tr>`;
+  const alt = L.filter(l=>l.r&&l!==venc).sort((a,b)=>b.r.m-a.r.m)[0];
+  let porque = '';
+  if (venc && alt) { const v=venc.r, a=alt.r;
+    porque = `Com as mesmas barras, <b>${venc.nome}</b> faz ${k(v.d)} de dano e <b>${alt.nome}</b> faz ${k(a.d)}; cada golpe de ${alt.nome} custa ${n((a.u/a.g)/(v.u/v.g),1)}× o de ${venc.nome}. ${n(v.r,2)} contra ${n(a.r,2)} por 1k, ${sn(v.l-a.l,1)} de lucro.`; }
+  const lucroTotal = D.estrategias.lucro.total, regra = D.estrategias.regra.total;
+  $('comparar').innerHTML = `<div class="sec-cab"><span class="n">05</span><h2>Comparar equipamento</h2><p>O melhor conjunto de cada família pelo objectivo «${OBJ[obj].rot.toLowerCase()}». * peça tua.</p></div>
+    <div class="rolar"><table class="tab">${'<tr><th></th>'+cab+'</tr>'}${conj}${rows}</table></div>
+    <p class="pequeno">${porque}</p>
+    ${lucroTotal.lucro > regra.lucro + 0.005 ? `<div class="aviso">${I.av}<div>O melhor por 1k (${n(regra.lucro_1k,2)}/1k) dá <b>${sn(regra.lucro,1)}</b>; o melhor em lucro total dá <b>${sn(lucroTotal.lucro,1)}</b> a ${n(lucroTotal.lucro_1k,2)}/1k. Melhor rentabilidade, menos lucro total: ${sn(regra.lucro - lucroTotal.lucro,1)}.</div></div>` : ''}
+    <h3 style="font-family:var(--f-d);font-size:18px;margin:34px 0 10px">Monta um conjunto</h3>
+    <div class="sim" id="sim"></div><div id="simres"></div>
+    <div class="botoes"><button class="btn" id="repor">${I.rep}Repor o que tens vestido</button><button class="btn" id="usarrec">${I.alvo}Usar a recomendada</button><button class="btn prim" id="guardar">${I.guard}Guardar (até 4)</button></div>
+    <div id="guardados"></div>
+    <h3 style="font-family:var(--f-d);font-size:18px;margin:34px 0 4px">As tuas peças</h3>
+    <p class="pequeno" style="margin:0">O inventário não está na API pública (<span class="mono">inventory.getInventory</span> pede sessão do jogo), por isso não se mostra como completo. Peças que tenhas guardadas, introduz à mão: ficam no browser e entram na pesquisa exaustiva.</p>
+    <div id="manuais"></div>`;
+  simulador(); guardados(); formManuais();
+  $('repor').onclick = () => { sel = D.slots.map(([s]) => D.opcoes[s].findIndex(o => o.origem === 'tens')); store.set(kj('v3.sel'), sel); simulador(); };
+  $('usarrec').onclick = () => { sel = D.estrategias[obj].pecas.slice(); store.set(kj('v3.sel'), sel); simulador(); };
+  $('guardar').onclick = () => { const kk = sel.join(','); if (!guard.includes(kk)) { guard.push(kk); if (guard.length > 4) guard.shift(); store.set(kj('v3.guardados'), guard); } guardados(); };
+}
+function posicao(r){ const ch=chaveObj[obj], kr=ch(r); let p=1; for(const x of D.sim){ if(maior(ch(x),kr)) p++; } return p; }
+function simulador(){
+  sel = sel.map((x,i) => (x >= 0 && x < D.opcoes[D.slots[i][0]].length) ? x : D.estrategias[obj].pecas[i]);
+  $('sim').innerHTML = D.slots.map(([s, rot], i) => { const o = D.opcoes[s][sel[i]];
+    return `<label class="pick r-${raro(o.raridade)}"><img src="${img(s,o.codigo)}" alt=""><div><div class="lab">${esc(rot)}</div><select data-i="${i}">${D.opcoes[s].map((x,j)=>`<option value="${j}"${j===sel[i]?' selected':''}>${esc(x.codigo)} · ${RN[raro(x.raridade)]} · ${x.origem==='tens'?'a tua ('+n(x.estado)+'%)':x.origem==='manual'?'à mão ('+n(x.estado)+'%)':'comprar ≈ '+n(x.capex,1)}</option>`).join('')}</select></div></label>`; }).join('');
+  $('sim').querySelectorAll('select').forEach(el => el.onchange = () => { sel[+el.dataset.i] = +el.value; store.set(kj('v3.sel'), sel); simulador(); });
+  const r = SIM[sel.join(',')], ref = SIM[D.estrategias[obj].pecas.join(',')];
+  if (!r || !ref) { $('simres').innerHTML = '<p class="pequeno">Sem resultado para esta combinação (ainda não avaliada).</p>'; return; }
+  const d = (a,b,c=2,inv=false,neu=false) => { const x=a-b; if (Math.abs(x)<1e-9) return '<span class="d neutro">=</span>'; const bom = inv? x<0 : x>0; return `<span class="d ${neu?'neutro':bom?'mais':'menos'}">${sn(x,c)}</span>`; };
+  $('simres').innerHTML = `<div class="simres">
+      <div><span>Lucro por 1k</span><b class="num">${n(r.r,2)}</b> ${d(r.r,ref.r)}</div>
+      <div><span>Lucro líquido</span><b class="num">${sn(r.l,1)}</b> ${d(r.l,ref.l,1)}</div>
+      <div><span>Dano por golpe</span><b class="num">${n(r.d/r.g)}</b> ${d(r.d/r.g,ref.d/ref.g,0,false,true)}</div>
+      <div><span>Investimento</span><b class="num">${r.c?n(r.c,1):'0'}</b> ${d(r.c,ref.c,1,true)}</div>
+      <div><span>Dano com as barras</span><b class="num">${k(r.d)}</b> ${d(r.d,ref.d,0,false,true)}</div>
+      <div><span>Custo por golpe</span><b class="num">${n(r.u/r.g,2)}</b> ${d(r.u/r.g,ref.u/ref.g,2,true)}</div><div><span>Bounty bruto</span><b class="num">${n(r.b,2)}</b></div></div>
+    <p class="pequeno">Diferenças contra a recomendada (${OBJ[obj].rot.toLowerCase()}). Este conjunto fica em <b>${n(posicao(r))}.º</b> de ${n(D.sim.length)}.</p>`;
+}
+function guardados(){
+  if (!guard.length) { $('guardados').innerHTML = ''; return; }
+  const rows = guard.map((g,gi) => { const r = SIM[g]; if (!r) return `<tr><td>Conjunto ${gi+1}</td><td colspan="5" style="text-align:left;color:var(--ink3)">já não existe nesta pesquisa (as peças mudaram)</td><td><button class="btn" data-rm="${gi}">${I.lixo}</button></td></tr>`;
+    return `<tr><td>${g.split(',').map((c,i)=>{const o=D.opcoes[D.slots[i][0]][+c]; return o?`<span class="r-${raro(o.raridade)}" style="color:var(--c);font-family:var(--f-m);font-size:12px">${esc(o.codigo)}</span>`:'?';}).join(' ')}</td><td>${n(r.r,2)}</td><td>${sn(r.l,1)}</td><td>${n(r.d/r.g)}</td><td>${r.c?n(r.c,1):'0'}</td><td>${n(posicao(r))}.º</td>
+      <td style="text-align:right"><button class="btn" data-ver="${gi}">ver</button> <button class="btn" data-rm="${gi}" title="remover">${I.lixo}</button></td></tr>`; }).join('');
+  $('guardados').innerHTML = `<div class="rolar" style="margin-top:16px"><table class="tab"><tr><th>Guardados</th><th>Por 1k</th><th>Lucro</th><th>Dano/golpe</th><th>Investimento</th><th>Posição</th><th></th></tr>${rows}</table></div>`;
+  $('guardados').querySelectorAll('[data-rm]').forEach(b => b.onclick = () => { guard.splice(+b.dataset.rm, 1); store.set(kj('v3.guardados'), guard); guardados(); });
+  $('guardados').querySelectorAll('[data-ver]').forEach(b => b.onclick = () => { sel = guard[+b.dataset.ver].split(',').map(Number); store.set(kj('v3.sel'), sel); simulador(); });
+}
+let CATALOGO = null;
+async function formManuais(){
+  if (!CATALOGO) { try { CATALOGO = await obter('/api/catalogo'); } catch(e){ CATALOGO = []; } }
+  const lista = manuais.map((m,i) => `<tr><td><span class="r-${raro(m.raridade)}" style="color:var(--c);font-weight:600">${esc(m.codigo)}</span></td><td>${Object.entries(m.stats).map(([a,b])=>esc(a)+' '+n(b)).join(', ')}</td><td>${n(m.estado)}%</td><td style="text-align:right"><button class="btn" data-rmm="${i}">${I.lixo}</button></td></tr>`).join('');
+  const opts = (CATALOGO||[]).sort((a,b)=>a.slot.localeCompare(b.slot)||a.codigo.localeCompare(b.codigo)).map(c => `<option value="${esc(c.codigo)}">${esc(c.codigo)} · ${RN[raro(c.raridade)]}</option>`).join('');
+  $('manuais').innerHTML = `${lista?`<div class="rolar" style="margin-top:12px"><table class="tab"><tr><th>Peça</th><th>Roll</th><th>Durabilidade</th><th></th></tr>${lista}</table></div>`:''}
+    <div class="form"><label>Peça<select id="mcod">${opts}</select></label><span id="mstats" style="display:contents"></span><label>Durabilidade %<input id="mest" type="number" min="1" max="100" value="100"></label><button class="btn prim" id="madd">${I.mais}Adicionar</button></div>
+    <p class="pequeno" id="mmsg"></p>`;
+  const campos = () => { const c = (CATALOGO||[]).find(x => x.codigo === $('mcod').value); if (!c) return;
+    $('mstats').innerHTML = Object.entries(c.intervalos||{}).map(([s,[lo,hi]]) => `<label>${esc(s)} (${n(lo)}–${n(hi)})<input type="number" data-s="${esc(s)}" min="${lo}" max="${hi}" value="${Math.round((lo+hi)/2)}"></label>`).join(''); };
+  if ($('mcod')) { $('mcod').onchange = campos; campos(); }
+  $('madd') && ($('madd').onclick = async () => {
+    const c = (CATALOGO||[]).find(x => x.codigo === $('mcod').value); if (!c) return;
+    const stats = {}; $('mstats').querySelectorAll('input').forEach(i => stats[i.dataset.s] = Number(i.value));
+    const novo = {id: Date.now().toString(36), codigo: c.codigo, raridade: c.raridade, slot: c.slot, stats, estado: Number($('mest').value)};
+    await sincronizar([...manuais, novo]);
+  });
+  $('manuais').querySelectorAll('[data-rmm]').forEach(b => b.onclick = () => sincronizar(manuais.filter((_,i)=>i !== +b.dataset.rmm)));
+}
+async function sincronizar(lista){
+  try {
+    const d = await enviar('/api/pecas', lista);
+    manuais = lista.filter(m => d.aceites.some(a => a.id === m.id));
+    store.set(kj('v3.manuais'), manuais);
+    $('mmsg') && ($('mmsg').innerHTML = d.recusadas.length ? `<span style="color:var(--bad)">Recusada: ${esc(d.recusadas[0].porque)}</span>` : 'Guardado no browser. O motor vai voltar a fazer a pesquisa exaustiva com estas peças.');
+    formManuais();
+  } catch(e) { $('mmsg') && ($('mmsg').textContent = 'Sem ligação ao servidor local.'); }
+}
+
+// ---------------------------------------------------------------- bounty e drops
+function spark(xs){
+  if (!xs || xs.length < 2) return '';
+  const vs = xs.map(x=>x[1]).filter(v=>v!=null); if (vs.length<2) return '';
+  const mx = Math.max(...vs), mn = Math.min(...vs), t0 = xs[0][0], t1 = xs[xs.length-1][0];
+  const pts = xs.filter(x=>x[1]!=null).map(x => [(x[0]-t0)/(t1-t0||1)*88+1, 22-((x[1]-mn)/((mx-mn)||1))*20]);
+  return `<svg class="spark" viewBox="0 0 90 24"><path d="M${pts.map(p=>p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' L')}"/></svg>`;
+}
+function bounty(){
+  const E = D.estrategias[obj];
+  const F = D.fundos || {};
+  const rows = [];
+  for (const [t, r] of Object.entries(D.rondas || {})) for (const l of r.lados || []) {
+    if (!(l.taxa > 0)) continue;
+    const f = F[(r.batalha||'') + ':' + l.lado] || {};
+    const noPlano = E.passos.some(p => p.t === t && p.lado === l.lado);
+    rows.push(`<tr${noPlano?' class="vence"':''}><td>${esc(t.replace(' / ',' × '))} · <b>${esc(l.pais)}</b>${noPlano?' <span class="tag ok">no plano</span>':''}</td>
+      <td>${n(l.taxa,3)}</td><td>${l.fundo==null?'<span class="tag ind">sem fundo</span>':n(l.fundo,1)}</td>
+      <td>${f.ritmo_min!=null?sn(f.ritmo_min,1)+'/min':'—'}</td><td>${f.esgota_em_min!=null?'~'+hm(f.esgota_em_min/60):'—'}</td>
+      <td>${esc(f.estado || l.estado || '—')}</td><td>${n(f.leituras)}</td></tr>`);
+  }
+  const cp = D.composicao && D.composicao.por_tier, ref = D.referencia;
+  const comp = cp ? ['6','5','4','3','2'].map(t => { const c = cp[t], m = c.p*100, rf = ref.p[t];
+    return `<span class="r-${raro(c.nome)}" style="color:var(--c);font-weight:600">${c.nome}</span>
+      <div><div class="bar r-${raro(c.nome)}"><i style="width:${Math.min(100, m*2)}%"></i></div><span class="hd">${n(m,2)}% · IC90 ${n(c.p_lo*100,2)}–${n(c.p_hi*100,2)}% · ${n(c.itens)} de ${n(c.n)}</span></div>
+      <div><div class="bar r-${raro(c.nome)}"><i style="width:${Math.min(100, rf*2)}%;opacity:.55"></i></div><span class="hd">${n(rf,2)}% · ${m - rf >= 0 ? '+' : '−'}${n(Math.abs(m-rf),2)} p.p.</span></div>`; }).join('') : '';
+  const ml = D.maldives;
+  const rondas = Object.entries(D.rondas || {}).map(([t, r]) => {
+    const rg = (x, v) => estadoRegra(v, x);
+    return `<tr><td>${esc(t.replace(' / ',' × '))} r${r.numero}</td><td>${n(r.jogadores)}</td><td>${n(r.itens)}</td><td>${r.mais_itens?'sim':'não'}</td><td>${rg(r.regra && r.regra.ronda, r.validacao && r.validacao.ronda)}</td><td>${r.regra && r.regra.batalha ? rg(r.regra.batalha, r.validacao && r.validacao.batalha) : '—'}</td><td>${r.backtest_erro_pct!=null?sn(r.backtest_erro_pct,0)+'%':'—'}</td><td>${hhmm(r.lido_em)}</td></tr>`; }).join('');
+  const VR = (D.validacao_ranking || []).filter(v => v.estado !== 'confirmado' || v.final || v.fora_da_folga);
+  const verif = VR.map(v => `<tr><td>${esc((v.titulo||'').replace(' / ',' × '))} · ${esc(v.pool)}</td><td>${estadoRegra(v)}</td>
+      <td>${v.viva ? `${n(v.viva.itens)} / ${n(v.viva.esperados)} · folga ${n(v.viva.folga)} · ${n(v.viva.inversoes)} inversões · ${hhmm(v.t_viva)}` : '—'}</td>
+      <td style="white-space:normal;min-width:220px">${v.final ? `${n(v.final.itens)} / ${n(v.final.esperados)} · ${n(v.final.inversoes)} inversões — ${esc(v.explicacao||'')}` : v.pendente ? 'à espera do fim da ronda' : '—'}</td></tr>`).join('');
+  $('bounty').innerHTML = `<div class="sec-cab"><span class="n">06</span><h2>Bounty e drops</h2><p>O fundo de cada lado é partilhado por todos os que batem desse lado. Observado: o que a API diz agora. Calculado: o ritmo entre leituras guardadas. Estimado: quando esgota a esse ritmo — não é uma garantia.</p></div>
+    ${rows.length ? `<div class="rolar"><table class="tab"><tr><th>Lado</th><th>Por 1k</th><th>Fundo observado</th><th>Ritmo calculado</th><th>Esgota (estimado)</th><th>Estado</th><th>Leituras</th></tr>${rows.join('')}</table></div>` : '<p class="pequeno">Sem lados com bounty nas rondas lidas.</p>'}
+    <div class="duas" style="margin-top:34px">
+      <div><h3 style="font-family:var(--f-d);font-size:18px;margin:0 0 6px">Raridade de um item novo</h3>
+        <p class="pequeno" style="margin:0 0 12px">Duas amostras, lado a lado, sem trocar uma pela outra. O motor usa a medida (maior). A raridade é independente da posição: quem entra no pool leva o que lhe calhar na ordem.</p>
+        <div class="comp"><span></span><span class="hd">medida: ${n(D.composicao && D.composicao.itens_medidos)} itens, ${n(D.composicao && D.composicao.pools)} pools</span><span class="hd">referência histórica: ${n(ref && ref.n)} itens</span>${comp}</div></div>
+      <div><h3 style="font-family:var(--f-d);font-size:18px;margin:0 0 6px">A diferença de Maldives × Ethiopia</h3>
+        <div class="caixa">${ml ? `Às 15:59 o pool da batalha tinha <b>1 035</b> itens contra <b>1 023</b> esperados. Com a batalha acabada (16:21:02): ${n(ml.jogadores)} jogadores, ${n(ml.soma_ranking)} de dano no ranking — igual ao objecto da batalha (${n((ml.objecto.atacante||0)+(ml.objecto.defensor||0))}) — e <b>${n(ml.itens)} itens = floor(${n(ml.soma_ranking)} ÷ 500 000)</b>. A regra confere no fim. A diferença viva veio do dano que entrou enquanto o ranking era lido: o motor media 44 790/s, a ronda acabou a ~83 000/s, e a folga (6 itens) contava com o ritmo medido. <b>Explicado</b>, com uma lição: perto do fim da ronda a folga tem de usar o ritmo pior.` : 'Por investigar.'}</div></div>
+    </div>
+    <h3 style="font-family:var(--f-d);font-size:18px;margin:34px 0 8px">Rondas lidas — ranking merged</h3>
+    <div class="rolar"><table class="tab"><tr><th>Ronda</th><th>Jogadores</th><th>Itens</th><th>Itens &gt; jogadores</th><th>Regra (ronda)</th><th>Regra (batalha)</th><th>Erro da projecção</th><th>Lida</th></tr>${rondas}</table></div>
+    <p class="pequeno">Pool da ronda = floor(dano ÷ 200 000); da batalha = floor(dano ÷ 500 000); os itens vão para os melhores do ranking dos dois lados somados, um por jogador. Confere em cada leitura (inversões, itens abaixo do corte, contagem).</p>
+    <h3 style="font-family:var(--f-d);font-size:18px;margin:30px 0 6px">Verificações da regra — leitura viva e resultado final</h3>
+    <p class="pequeno" style="margin:0 0 10px">Uma leitura viva com a contagem fora da folga e sem inversões fica <b>por confirmar no fim da ronda</b>: as páginas lêem-se enquanto o dano entra. No fim lê-se o ranking final e decide-se. Com inversões, ou se o final também não conferir, é <b>discrepância confirmada</b>. Nada fica escondido.</p>
+    ${verif ? `<div class="rolar"><table class="tab"><tr><th>Ronda · pool</th><th>Estado</th><th>Leitura viva (itens / esperados)</th><th style="text-align:left">Resultado final</th></tr>${verif}</table></div>` : '<p class="pequeno">Todas as leituras vivas conferem.</p>'}`;
+}
+
+// ---------------------------------------------------------------- drops (o scripts/warera_drops.py)
+let DR = null, drOrdem = store.get('v3.drord', 'dano'), drVersao = -1;
+const TIERS_DR = ['2','3','4','5','6'];
+// os numeros como o script e o jogo os mostram (35,44k, 102,87M)
+const fmtJ = v => v == null ? '—' : v < 1000 ? n(Math.floor(v)) : v/1e3 < 999.995 ? n(v/1e3,2)+'k' : v/1e6 < 999.995 ? n(v/1e6,2)+'M' : n(v/1e9,2)+'B';
+async function obterDrops(){
+  if (!S || !S.drops || S.drops.versao === drVersao) return;
+  try { DR = await obter('/api/drops'); drVersao = DR.versao; dropsTab(); } catch(e){}
+}
+function segRestantes(l){ if (l.segundos == null) return null; return l.segundos - Math.max(0, (Date.now() - new Date(l.lido_em).getTime())/1000); }
+function fmtTempo(s){ if (s == null) return '—'; const m = Math.floor(s/60); return m < 1 ? '<1m' : m >= 60 ? '~'+Math.floor(m/60)+'h '+String(m%60).padStart(2,'0')+'m' : '~'+m+'m'; }
+function dropsTab(){
+  if (!DR) { $('drops').innerHTML = `<div class="sec-cab"><span class="n">07</span><h2>Drops por batalha</h2><p>A ler…</p></div>`; return; }
+  const noPlano = new Set(D ? Object.values(D.rondas || {}).filter(r => r.no_plano).map(r => r.batalha) : []);
+  const L = DR.linhas.slice();
+  const azul = l => (l.ronda_tiers['3'] || null);
+  if (drOrdem === 'dano') L.sort((a,b) => { const x = azul(a), y = azul(b); return (x===null)-(y===null) || (x&&y ? x.valor - y.valor : 0) || a.label.localeCompare(b.label); });
+  else L.sort((a,b) => { const ea = a.acaba==='ended', eb = b.acaba==='ended', sa = segRestantes(a), sb = segRestantes(b);
+    return ea-eb || (sa==null)-(sb==null) || (sa||0)-(sb||0) || a.label.localeCompare(b.label); });
+  const cel = (t, k2) => { const x = t[k2]; return x ? `<td class="cut" title="#${x.rank} · ${esc(x.item||'')}">${fmtJ(x.valor)}</td>` : '<td class="cut vazio">-</td>'; };
+  const NT = DR.nomes_tiers || {};
+  const linhas = L.map(l => `<tr class="${noPlano.has(l.batalha)?'plano':''}">
+      <td>${esc(l.label)}${l.tipo==='tournament'?' <span class="tag est">torneio</span>':l.tipo==='resistance'?' <span class="tag ordem">resistência</span>':''}${noPlano.has(l.batalha)?' <span class="tag ok">no plano</span>':''}${l.tu_ronda ? `<span class="tu">tu: ${fmtJ(l.tu_ronda.dano)} na ronda (#${n(l.tu_ronda.rank)})</span>` : ''}</td>
+      <td>${esc(l.ronda)}${l.ao_vivo?' <small>ao vivo</small>':''}</td>
+      <td>${l.acaba==='ended' ? 'acabou' : fmtTempo(segRestantes(l))}</td>
+      ${TIERS_DR.map((t,i) => (i===0 ? cel(l.ronda_tiers,t).replace('class="cut','class="sep cut') : cel(l.ronda_tiers,t))).join('')}
+      ${TIERS_DR.map((t,i) => (i===0 ? cel(l.batalha_tiers,t).replace('class="cut','class="sep cut') : cel(l.batalha_tiers,t))).join('')}
+      <td><small>${hhmm(l.lido_em)}</small></td></tr>`).join('');
+  const cab = TIERS_DR.map((t,i) => `<th class="${i===0?'sep':''}"><span class="r-${raro(NT[t])}" style="color:var(--c)">${esc(NT[t]||t)}</span></th>`).join('');
+  $('drops').innerHTML = `<div class="sec-cab"><span class="n">07</span><h2>Drops por batalha</h2><p>O dano mínimo para cada raridade em cada batalha activa, como o <span class="mono">scripts/warera_drops.py</span> (as mesmas funções, carregadas do script sem o alterar): a ronda ao vivo — ou a última com drops — e o ranking da batalha inteira, no ranking merged.</p></div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px"><span class="etq">Ordem</span><div class="seg" role="group"><button data-dr="dano" aria-pressed="${drOrdem==='dano'}">Por dano (Rare)</button><button data-dr="tempo" aria-pressed="${drOrdem==='tempo'}">A acabar primeiro</button></div>
+      <span class="pequeno" style="margin:0">${n(DR.lidas)} de ${n(DR.total)} batalhas lidas · volta ${n(DR.volta)}${DR.na_fila ? ' · '+n(DR.na_fila)+' na fila' : ''} · ${n(DR.pedidos)} pedidos</span></div>
+    ${L.length ? `<div class="rolar"><table class="tab dr"><tr><th></th><th></th><th></th><th class="grp sep" colspan="5">Drops da ronda</th><th class="grp sep" colspan="5">Drops da batalha</th><th></th></tr>
+      <tr><th>Batalha</th><th>Ronda</th><th>Acaba em</th>${cab}${cab}<th>Lida</th></tr>${linhas}</table></div>` : '<p class="pequeno">Ainda nenhuma batalha lida.</p>'}
+    <p class="pequeno">Cada valor é o dano de quem ficou com a última peça dessa raridade (passa o rato para ver o rank e a peça). «-»: essa raridade não saiu. «Acaba em» é o mínimo, se o lado que vai à frente ganhar todos os ticks. Esta aba lê com a prioridade mais baixa: só usa os pedidos que sobram ao assistente (no limite dos 45/min), por isso dá a volta a todas as batalhas devagar; a hora de cada linha diz quando foi lida.</p>`;
+  $('drops').querySelectorAll('[data-dr]').forEach(b => b.onclick = () => { drOrdem = b.dataset.dr; store.set('v3.drord', drOrdem); dropsTab(); });
+}
+
+function materialidadeHtml(){
+  const Mt = (S && S.materialidade) || D.materialidade, pend = S && S.precos_pendentes;
+  if (!Mt && !pend) return `<h4 style="margin:22px 0 4px;font-size:13px;color:var(--ink3);font-weight:500">Preços</h4><p class="pequeno" style="margin:0">Ainda não houve mudanças de preço desde o último cálculo completo.</p>`;
+  const vm = Mt && Mt.vencedor_mudou ? Object.entries(Mt.vencedor_mudou).filter(([,v])=>v).map(([o])=>OBJ[o]?OBJ[o].rot:o) : null;
+  return `<h4 style="margin:22px 0 4px;font-size:13px;color:var(--ink3);font-weight:500">Preços — materialidade${Mt?' (às '+hhmm(Mt.t)+')':''}</h4>
+    ${pend ? `<p class="pequeno" style="margin:0 0 6px"><span class="gira" style="display:inline-block;vertical-align:-1px"></span> a agrupar ${n(pend.agrupadas)} leitura${pend.agrupadas>1?'s':''} do livro de ordens desde as ${hhmm(pend.desde)}</p>` : ''}
+    ${Mt ? `<ul class="mud">
+      <li><span>Mudanças: ${(Mt.mudancas||[]).map(x=>esc(x.codigo)+' '+n(x.antes,3)+'→'+n(x.agora,3)).join(', ') || 'só arredondamentos'}</span><span>${n(Mt.agrupadas)} leitura${Mt.agrupadas>1?'s':''}</span></li>
+      <li><span>O que se refez</span><span>${esc(Mt.tipo||'—')}</span></li>
+      <li><span>Conjuntos recontados (contas exactas)</span><span>${n(Mt.conjuntos)}</span></li>
+      <li><span>Divisão pelas rondas</span><span>${Mt.divisao_refeita ? 'refeita'+(Mt.divisao_s!=null?' em '+n(Mt.divisao_s,2)+' s':'') : 'a mesma (comida e cases não a mudam)'}</span></li>
+      <li><span>Tempo total</span><span>${Mt.segundos!=null ? n(Mt.segundos,1)+' s' : '—'}${Mt.segundos_base!=null ? ' ('+n(Mt.segundos_base,1)+' s a reler a base)' : ''}</span></li>
+      <li><span>O vencedor mudou?</span><span>${vm == null ? '—' : vm.length ? '<b>sim</b>: '+esc(vm.join(', ')) : 'não'}</span></li></ul>` : ''}`;
+}
+function estadoRegra(v, x){
+  const est = v && v.estado ? v.estado : (x ? (x.ok ? 'confirmado' : (x.inversoes > 0 ? 'discrepância confirmada' : 'por confirmar no fim da ronda')) : 'dados indisponíveis');
+  const cls = est === 'confirmado' ? 'ok' : est === 'por confirmar no fim da ronda' ? 'pend' : est === 'dados indisponíveis' ? 'est' : 'nao';
+  const txt = est === 'confirmado' && v && v.final ? 'confirmado no fim' : est;
+  return `<span class="tag ${cls}">${esc(txt)}</span>${x && !x.ok ? ` <span style="color:var(--ink3)">${n(x.itens)}/${n(x.esperados)}</span>` : ''}`;
+}
+
+// ---------------------------------------------------------------- motor
+function motor(){
+  if (!S || !D) return;
+  const m = S.motor, L = S.limitador, tr = m.trabalho, uc = m.ultimo_calculo;
+  const pct = tr ? tr.feitas / Math.max(1, tr.total) * 100 : 100;
+  const fontes = S.fontes.map(f => { const cls = f.estado==='a ler'?'a':f.estado==='erro'?'e':f.desactualizada?'v':f.estado==='por ler'?'p':'';
+    return `<tr><td><span class="pt2 ${cls}"></span>${esc(f.rotulo)}</td><td>${f.lido_em?hhmmss(f.lido_em):'—'}</td><td>${f.idade_s!=null?agoraTxt(f.idade_s):'—'}</td><td>${f.cadencia_s>=60?n(f.cadencia_s/60,f.cadencia_s%60?1:0)+' min':n(f.cadencia_s)+' s'}</td><td style="text-align:left;color:var(--ink3);font-size:12.5px">${f.erro?'<span style="color:var(--bad)">'+esc(f.erro)+'</span>':f.estado==='a ler'?'a ler…':(f.proxima_s<1?'já':f.proxima_s<90?'em '+n(f.proxima_s)+' s':'em '+n(f.proxima_s/60)+' min')}${f.descartadas?' · '+f.descartadas+' fora de ordem':''}</td></tr>`; }).join('');
+  const M = D.mudancas;
+  const ea = M && M.estrategia && M.estrategia[obj];
+  const fmtv = v => typeof v === 'number' ? (Number.isInteger(v) ? n(v) : n(v,1)) : esc(v==null?'—':v);
+  const dados = M ? M.dados.slice(0, 10).map(d => `<li><span>${esc(d.fonte)}${d.estado&&d.estado!=='a pagar'?' · '+esc(d.estado):''}</span><span>${fmtv(d.antes)} → <b>${fmtv(d.agora)}</b></span></li>`).join('') : '';
+  const est = ea ? [`<li><span>Lucro (pior cenário)</span><span>${sn(ea.antes.total.lucro,1)} → <b>${sn(ea.agora.total.lucro,1)}</b></span></li>`,
+    `<li><span>Lucro por 1k</span><span>${n(ea.antes.total.lucro_1k,2)} → <b>${n(ea.agora.total.lucro_1k,2)}</b></span></li>`,
+    `<li><span>Dano</span><span>${ea.antes.total.dano != null ? k(ea.antes.total.dano) : '—'} → <b>${k(ea.agora.total.dano)}</b></span></li>`,
+    `<li><span>Equipamento</span><span>${ea.equipamento_mudou?'<b>mudou</b>':'igual'}</span></li>`,
+    ...ea.passos.filter(p=>p.tipo!=='igual').map(p => `<li><span>${esc(p.t.replace(' / ',' × '))}: ${p.tipo}</span><span>${p.antes && p.antes.dano != null ? k(p.antes.dano) : '—'} → <b>${p.agora && p.agora.dano != null ? k(p.agora.dano) : '—'}</b></span></li>`)].join('') : '';
+  const H = (D.historico_estrategias || []).slice(-10).reverse().map(h => { const o = h.objectivos && h.objectivos[obj] || {};
+    return `<li><span class="h">${hhmm(h.t)}</span><span>${esc((h.motivo||[]).join(', '))}${h.parcial && h.parcial.lidas < h.parcial.escolhidas ? ` <span class="tag est">${h.parcial.lidas}/${h.parcial.escolhidas} rondas</span>`:''}</span><span class="mono" style="font-size:12.5px">${sn(o.lucro,1)} · ${n(o.lucro_1k,2)}/1k</span></li>`; }).join('');
+  const V = (D.validacoes || []).flatMap(v => (v.previsoes||[]).slice(-1).map(p => {
+    const err = p.fim_estimado && p.fim_real ? (p.fim_real - p.fim_estimado)/60 : null;
+    const tier = p.plano ? `${esc(p.plano.tier_ronda && (p.plano.tier_ronda.conservador||p.plano.tier_ronda.esperado) || '?')} → ${esc(p.plano.nome_real || '—')}` : '—';
+    return `<tr><td class="mono" style="font-size:12.5px">${esc(String(v.ronda).slice(-6))}</td><td>${err!=null?sn(err,0)+' min':'—'}</td><td>${p.plano && p.plano.dano != null ? k(p.plano.dano)+' de dano' : '—'}</td><td>${p.plano && p.plano.nome_real ? 'previsto tier '+tier : '—'}</td><td>${v.regra_ok?'<span class="tag ok">confere</span>':'<span class="tag nao">não</span>'}</td></tr>`; })).join('');
+  $('motor').innerHTML = `<div class="sec-cab"><span class="n">08</span><h2>Motor e recálculo contínuo</h2><p>Enquanto esta página está aberta, cada fonte volta a ler-se ao seu ritmo, com um limitador central. Só se recalcula o que a mudança afecta; enquanto o cálculo corre, fica a última estratégia válida.</p></div>
+    <div class="motor">
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap"><b style="font-size:15px">${tr ? 'A calcular: ' + esc(tr.rondas.length + ' ronda' + (tr.rondas.length>1?'s':'')) : 'Motor: ' + esc(m.estado)}</b>
+          <span class="mono" style="font-size:12.5px;color:var(--ink3)">${tr ? n(tr.feitas)+' / '+n(tr.total)+' rondas · '+n(tr.decorrido_s,0)+' s' : uc ? 'último: '+n(uc.duracao_s,1)+' s' : ''}</span></div>
+        <div class="prog"><i style="width:${pct}%"></i></div>
+        <div class="pequeno" style="margin-top:4px">${uc ? `<b>${esc(uc.tipo||'')}</b> de ${uc.rondas.length} ronda${uc.rondas.length>1?'s':''}${uc.janelas?' ('+n(uc.janelas)+' janelas)':''} (${esc(uc.rondas.map(t=>t.replace(' / ',' × ')).join(', '))}). ${S.tempos && S.tempos.divisao_s != null ? `Divisão das barras pelas rondas (por metade de dano, para todos os golpes): <b>${n(S.tempos.divisao_s,2)} s</b>, às ${hhmm(S.tempos.divisao_em)}. Contas dos ${n(uc.conjuntos)} conjuntos: <b>${n(S.tempos.contas_s,2)} s</b>. Publicação: ${n(S.tempos.publicar_s,2)} s.` : ''} Cálculos abandonados por dados mais recentes: ${n(m.cancelados)}.` : 'Ainda sem cálculos.'}${m.erros.length?` <span style="color:var(--bad)">${m.erros.length} erro(s): ${esc(m.erros[m.erros.length-1])}</span>`:''}</div>
+        <div class="rolar" style="margin-top:18px"><table class="tab fontes"><tr><th>Fonte</th><th>Lida</th><th>Idade</th><th>Ritmo</th><th style="text-align:left">Próxima</th></tr>${fontes}</table></div>
+      </div>
+      <div>
+        <div class="uso"><b>${n(L.ultimo_minuto)}</b><span style="color:var(--ink3)">/ ${n(L.limite_min)} pedidos no último minuto</span></div>
+        <div class="prog"><i style="width:${Math.min(100, L.ultimo_minuto/L.limite_min*100)}%"></i></div>
+        <p class="pequeno" style="margin-top:4px">${n(L.total)} pedidos ao jogo desde que o servidor arrancou · ${n(L.recusas_429)} recusas 429 · ${L.em_fila} em fila. O limite total da API é 100/min; o assistente usa ${n(L.limite_min)}${L.tecto ? ` (no browser, uma leitura longa pode ir além, mas nunca passa de ${n(L.tecto)})` : ''}.</p>
+        ${materialidadeHtml()}
+        <h4 style="margin:22px 0 4px;font-size:13px;color:var(--ink3);font-weight:500">O que mudou no último cálculo${M?` (${M.antes_hora} → ${M.agora_hora})`:''}</h4>
+        ${M ? `<ul class="mud">${est}</ul><h4 style="margin:16px 0 4px;font-size:13px;color:var(--ink3);font-weight:500">Nos dados</h4><ul class="mud">${dados || '<li><span>nada de relevante</span><span></span></li>'}</ul>` : '<p class="pequeno">Ainda só há um cálculo.</p>'}
+      </div>
+    </div>
+    <div class="duas" style="margin-top:30px">
+      <div><h3 style="font-family:var(--f-d);font-size:18px;margin:0 0 8px">Histórico de estratégias</h3><ul class="hist">${H || '<li><span class="h">—</span><span>ainda sem histórico</span><span></span></li>'}</ul></div>
+      <div><h3 style="font-family:var(--f-d);font-size:18px;margin:0 0 8px">Previsto contra observado</h3>
+        <p class="pequeno" style="margin:0 0 8px">Rondas já acabadas: o erro da hora de fim e a raridade que o dano planeado teria levado no ranking final.</p>
+        ${V ? `<div class="rolar"><table class="tab"><tr><th>Ronda</th><th>Erro do fim</th><th>Plano</th><th>Raridade</th><th>Regra</th></tr>${V}</table></div>` : '<p class="pequeno">Ainda sem rondas acabadas para comparar.</p>'}</div>
+    </div>`;
+}
+
+// ---------------------------------------------------------------- tecnico e fontes
+function tecnico(){
+  const pv = D.prova || {}, c = D.cotacoes || {}, a = D.aberturas || {};
+  const F = (t, cls, val) => `<div class="lin"><span>${t}</span><b><span class="tag ${cls}">${val}</span></b></div>`;
+  const ca = a.case1;
+  let evCase = '—';
+  if (ca && ca.openedCount && D.valores) { const vr = {common: null, uncommon:D.valores.novo.Uncommon, rare:D.valores.novo.Rare, epic:D.valores.novo.Epic, legendary:D.valores.novo.Legendary, mythic:D.valores.novo.Mythic};
+    const com = ['boots1','chest1','gloves1','helmet1','pants1','knife'].map(x => c[x] && c[x].valor).filter(x => x != null); vr.common = com.length ? com.reduce((x,y)=>x+y,0)/com.length : null;
+    let tot = 0, ok = true; for (const [r,q] of Object.entries(ca.byRarity||{})) { if (vr[r]==null) ok=false; else tot += q*vr[r]; } if (ok) evCase = n(tot/ca.openedCount,2); }
+  $('tecdet').innerHTML = `<div class="duas" style="margin-top:16px">
+    <div><h4 style="font-size:14px;margin:0 0 6px">De onde vem cada número</h4>
+      ${F('Vida, fome, pílula — user.getUserById','ok','real')}
+      ${F('Recuperação às horas certas (+10% do máximo) — 4 leituras a 19/11','ok','verificado')}
+      ${F('Comer gasta 1 ponto inteiro de fome; bater pede vida ≥ custo do golpe','est','por confirmar')}
+      ${F('Equipamento vestido, roll e durabilidade — inventory.fetchCurrentEquipment','ok','real')}
+      ${F('Inventário — só com sessão do jogo','ind','indisponível')}
+      ${F('Peças introduzidas à mão — guardadas no teu browser','ordem','tuas')}
+      ${F('Batalhas, rondas, ranking merged — battle.getBattles, battleRanking.getRanking','ok','real')}
+      ${F('Bounty por lado e fundo — moneyPer1kDamages, moneyPool','ok','observado')}
+      ${F('Ritmo de esgotamento do fundo — leituras guardadas','est','calculado')}
+      ${F('Munição, comida, pílula, cases — melhor ordem do livro (tradingOrder.getTopOrders)','ordem','ordem aberta')}
+      ${F('Peças de equipamento — média de vendas por código, sem roll (gameStat)','est','estimativa')}
+      ${F(`Abrir uma case1 vale ≈ ${evCase} pelas tuas ${n(ca && ca.openedCount)} aberturas; vendê-la: ${n(c.case1 && c.case1.valor,2)}`,'est','estimativa')}
+      ${F(`Toolbox (${n(a.toolbox && a.toolbox.openedCount)} abertas), woodenCase (${n(a.woodenCase && a.woodenCase.openedCount)}), dinheiro de drop`,'ind','sem valor provado')}
+      ${F('Ressaca da pílula −60% — confirmado na API a 20/11 (attack.debuffsPercent = 60; debuffEndAt = fim do buff + 15,5 h)','ok','verificado')}
+    </div>
+    <div><h4 style="font-size:14px;margin:0 0 6px">Prova da pesquisa exaustiva</h4>
+      <p>${n(pv.todas)} conjuntos × munição × comida = ${n(pv.builds)} builds. Para cada uma, o plano até onde o lucro sobe, com as barras como tecto: o que cada dano rende em cada ronda sai das contas do <span class="mono">optimizador.planear</span> do projecto (2 424 linhas comparadas, 0 diferenças — <span class="mono">prova_barras.py</span>), e a divisão dos golpes pelas rondas é exacta (programação dinâmica; 0 diferenças contra força bruta).</p>
+      <p>A comida, o desgaste e as cases custam o mesmo em todos os golpes, por isso não mudam a divisão: ela faz-se por metade de dano (arma, luvas, capacete) e para todos os golpes de uma vez. Vida e fome novas são só outra leitura.</p>
+      <p>O motor do projecto só procura ${n(pv.no_espaco_do_motor)} destes conjuntos (a fronteira de <span class="mono">builds_epic</span>, ${n(pv.builds_motor)} builds), porque descarta peças com stats piores.</p>
+      <p>Vencedor exaustivo: <b>${esc(pv.vencedor||'—')}</b> (${n(pv.r1k,3)}/1k). Melhor no espaço do motor: <b>${esc(pv.vencedor_motor||'—')}</b> (${n(pv.r1k_motor,3)}/1k). <b>${pv.iguais?'Iguais.':'Diferentes — é por isso que a pesquisa é exaustiva.'}</b></p>
+      <h4 style="font-size:14px;margin:18px 0 6px">Limites que continuam</h4>
+      <ul style="margin:0;padding-left:18px">
+        <li>A projecção dos concorrentes chegou a errar mais de 100% em 30 min; por isso o lucro é o do pior de três cenários.</li>
+        <li>O custo de comida conta-se em todos os golpes, mesmo os que a recuperação paga.</li>
+        <li>Os golpes das barras são os esperados (a esquiva poupa vida em média): o dano real de cada ronda varia um pouco. Bate em cada ronda até chegares ao dano dela.</li>
+        <li>Preços de equipamento sem roll; sem valor de revenda.</li>
+        <li>O bounty é limitado pelo fundo inteiro, que é partilhado; o ritmo de esgotamento só aparece com duas leituras.</li>
+      </ul></div></div>`;
+}
+
+// ---------------------------------------------------------------- tudo
+function destacar(){
+  document.querySelectorAll('[data-k]').forEach(el => { const k2 = el.dataset.k, v = el.textContent;
+    if (anteriores[k2] != null && anteriores[k2] !== v) { el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); }
+    anteriores[k2] = v; });
+}
+function tudo(mudou){
+  cabecalho(); vitais(); agora(); plano(); equipamento(); resultado(); comparar(); bounty(); dropsTab(); motor(); tecnico();
+  destacar();
+  if (mudou) document.querySelectorAll('.passo.tem-mud').forEach(el => { el.classList.add('flash'); });
+}
+// tema
+const tm = store.get('v3.tema', null); if (tm) document.documentElement.dataset.tema = tm;
+$('tema').onclick = () => { const cur = document.documentElement.dataset.tema || (matchMedia('(prefers-color-scheme: light)').matches ? 'claro' : 'escuro');
+  const novo = cur === 'claro' ? 'escuro' : 'claro'; document.documentElement.dataset.tema = novo; store.set('v3.tema', novo); };
+$('lingua').onclick = () => {
+  const volta = LINGUA === 'en';
+  LINGUA = volta ? 'pt' : 'en'; store.set('v3.lingua', LINGUA);
+  if (volta) {   // de ingles para portugues: o texto fixo volta ao original; o resto desenha-se de novo
+    const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); let x;
+    while ((x = w.nextNode())) if (ORIGINAL.has(x)) { x.nodeValue = ORIGINAL.get(x); ORIGINAL.delete(x); }
+    document.querySelectorAll('[title]').forEach(el => { if (el.id === 'tema') el.title = 'Mudar o tema'; if (el.id === 'lingua') el.title = 'Mudar a língua'; });
+  }
+  aplicarLingua();
+  if (D) tudo(false); else { aEspera(); ligacao(); }
+  if (DR) dropsTab();
+};
+aplicarLingua();
+if (WEB) { $('rod2').textContent = 'Corre no teu browser · só lê a API pública do jogo · não mexe na tua conta'; iniciarWeb(); aEspera(); ligacao(); }
+// as pecas guardadas no browser vao para o motor ao abrir (no modo web, quando ele arrancar)
+(async () => { if (!manuais.length && !COMIDA && ORDENS == null) return; for (let i = 0; i < 120; i++) { try {
+  if (manuais.length) await enviar('/api/pecas', manuais); if (COMIDA) await enviar('/api/comida', {comida: COMIDA});
+  if (ORDENS != null) await enviar('/api/ordens', {tolerancia: ORDENS}); return; } catch(e) { await new Promise(r => setTimeout(r, 2000)); } } })();
+ciclo(); setInterval(ciclo, WEB ? 2000 : 5000);
+setInterval(() => { if (D) { cabecalho(); vitais(); } }, 30000);
+})();
+</script>
+</body>
+</html>

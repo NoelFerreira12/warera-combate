@@ -1,0 +1,17 @@
+{
+ "objecto": {
+  "atacante": 324646377,
+  "defensor": 293950202
+ },
+ "soma_ranking": 618596579.0,
+ "jogadores": 2024,
+ "itens": 1237,
+ "somas_rondas": [
+  45312180.0,
+  573284399.0
+ ],
+ "pools_rondas_500k": [
+  90,
+  1146
+ ]
+}

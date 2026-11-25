@@ -1,0 +1,36 @@
+{
+ "versao": "3fb0de6b71f9",
+ "ficheiros": [
+  "scripts/warera_drops.py",
+  "warera/__init__.py",
+  "warera/api.py",
+  "warera/bonus.py",
+  "warera/bounty.py",
+  "warera/combate/__init__.py",
+  "warera/combate/barras.py",
+  "warera/combate/motor.py",
+  "warera/combate/navegador.py",
+  "warera/combate/ronda.py",
+  "warera/combate/servidor.py",
+  "warera/config.py",
+  "warera/craft.py",
+  "warera/durabilidade.py",
+  "warera/memoria.py",
+  "warera/mercado.py",
+  "warera/motor.py",
+  "warera/objetivos.py",
+  "warera/optimizador.py",
+  "warera/pecas.py",
+  "warera/pilula.py",
+  "warera/precos.py",
+  "warera/regras.py",
+  "warera/simulador.py",
+  "warera/combate/maldives.json"
+ ],
+ "sementes": [
+  {
+   "ficheiro": "pools.json",
+   "destino": "saida/combate/optimizador/pools.json"
+  }
+ ]
+}
